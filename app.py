@@ -99,8 +99,7 @@ def add_saving_goal():
         "id": str(uuid.uuid4()),
         "name": request.form.get("name"),
         "target": float(request.form.get("target")),
-        "current": 0.0,
-        "icon": request.form.get("icon", "bi-piggy-bank")
+        "current": 0.0
     }
     data["savings_goals"].append(new_goal)
     save_data(data)
