@@ -19,7 +19,6 @@ def load_data():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-            # Merge defaults if missing
             for key in default_data:
                 if key not in data: data[key] = default_data[key]
             return data
@@ -42,11 +41,8 @@ def index():
     total_expense = sum(t["amount"] for t in transactions if t["type"] == "expense")
     balance = total_income - total_expense
     
-    # Sort transactions new -> old
-    sorted_transactions = sorted(transactions, key=lambda x: x['date'], reverse=True)
-    
     return render_template("index.html", 
-                           transactions=sorted_transactions, 
+                           transactions=reversed(transactions), 
                            income=total_income, expense=total_expense, balance=balance,
                            settings=settings, savings=savings, salary_preset=salary_preset)
 
@@ -55,24 +51,13 @@ def add_transaction():
     data = load_data()
     try: amount = float(request.form.get("amount"))
     except: amount = 0.0
-    
-    # Auto-assign Icon based on category
-    category = request.form.get("category")
-    icon_map = {
-        "ของกิน": "🍜", "เดินทาง": "🚝", "ช้อปปิ้ง": "🛍️", "บิล": "🧾", 
-        "เงินเดือน": "💰", "โบนัส": "💎", "ขายของ": "📦", "อื่นๆ": "✨",
-        "เงินออม": "🐷"
-    }
-    icon = icon_map.get(category, "✨")
-
     new_data = {
         "id": str(uuid.uuid4()),
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "type": request.form.get("type"),
-        "category": category,
+        "category": request.form.get("category"),
         "amount": amount,
-        "note": request.form.get("note"),
-        "icon": icon
+        "note": request.form.get("note")
     }
     data["transactions"].append(new_data)
     save_data(data)
@@ -85,6 +70,8 @@ def save_salary_preset():
     data["salary_preset"] = preset
     save_data(data)
     return jsonify({"status": "success"})
+
+# --- SAVINGS LOGIC ---
 
 @app.route("/add_saving_goal", methods=["POST"])
 def add_saving_goal():
@@ -126,8 +113,7 @@ def update_saving():
                     "type": "expense",
                     "category": "เงินออม",
                     "amount": amount,
-                    "note": f"ออมให้: {goal['name']}",
-                    "icon": "🐷"
+                    "note": f"ออมเงินเพื่อ: {goal['name']}"
                 })
             elif action == "withdraw":
                 real_withdraw = min(amount, goal["current"])
@@ -139,8 +125,7 @@ def update_saving():
                         "type": "income",
                         "category": "เงินออม",
                         "amount": real_withdraw,
-                        "note": f"แคะกระปุก: {goal['name']}",
-                        "icon": "🔨"
+                        "note": f"แคะกระปุก: {goal['name']}"
                     })
             break
             
