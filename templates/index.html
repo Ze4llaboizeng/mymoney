@@ -4,100 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuromi Money Pro</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Chakra+Petch:wght@400;600&family=VT323&display=swap" rel="stylesheet">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
-        /* === MAIN THEME (Kuromi Remastered) === */
+        /* === MAIN THEME (Kuromi) === */
         :root {
             --k-bg: #f3e5f5;
             --k-dark: #212121;
             --k-purple: #9c27b0;
-            --k-purple-light: #e1bee7;
             --k-pink: #e91e63;
-            --k-shadow: rgba(0, 0, 0, 0.15);
         }
-        body { 
-            background-color: var(--k-bg); 
-            background-image: radial-gradient(#e1bee7 1px, transparent 1px);
-            background-size: 20px 20px;
-            font-family: 'Kanit', sans-serif; 
-            padding-bottom: 90px; 
-        }
+        body { background-color: var(--k-bg); font-family: 'Kanit', sans-serif; padding-bottom: 80px; }
+        
+        .nav-pills .nav-link { color: var(--k-dark); background: white; border: 2px solid var(--k-dark); margin: 0 4px; border-radius: 50px; }
+        .nav-pills .nav-link.active { background: var(--k-dark); color: #e1bee7; transform: scale(1.05); }
 
-        /* Glass Card Effect */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 2px solid var(--k-dark);
-            border-radius: 20px;
-            box-shadow: 6px 6px 0px var(--k-dark);
-            transition: transform 0.2s;
-            overflow: hidden;
-        }
-        .glass-card:hover { transform: translateY(-2px); }
+        .k-card { background: white; border: 2px solid var(--k-dark); border-radius: 18px; box-shadow: 4px 4px 0px rgba(0,0,0,0.8); margin-bottom: 15px; }
 
-        /* Navigation */
-        .nav-pills .nav-link { 
-            color: var(--k-dark); 
-            background: white; 
-            border: 2px solid var(--k-dark); 
-            margin: 0 3px; 
-            border-radius: 50px; 
-            font-weight: 600;
-        }
-        .nav-pills .nav-link.active { 
-            background: var(--k-dark); 
-            color: var(--k-purple-light); 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transform: scale(1.05); 
-        }
-
-        /* Dashboard Header */
-        .balance-card {
-            background: linear-gradient(135deg, #212121 0%, #4a148c 100%);
-            color: white;
-            border: none;
-            position: relative;
-        }
-        .balance-card::after {
-            content: "☠️"; position: absolute; top: 10px; right: 20px; font-size: 3rem; opacity: 0.1;
-        }
-
-        /* Transaction List */
-        .tx-item {
-            background: white;
-            border-bottom: 1px solid #eee;
-            transition: 0.2s;
-        }
-        .tx-item:last-child { border-bottom: none; }
-        .tx-icon {
-            width: 45px; height: 45px;
-            background: #f3e5f5; color: var(--k-purple);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        /* === PIGGY BANK UI (Improved) === */
+        /* === PIGGY BANK UI === */
         .piggy-jar {
             background: #f8bbd0;
             border: 3px solid #880e4f;
             border-radius: 40px;
             padding: 20px;
             position: relative;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.2);
-            transition: 0.3s;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.2);
         }
-        .piggy-jar:active { transform: scale(0.98); }
         .piggy-jar::before, .piggy-jar::after {
             content: ''; position: absolute; top: -15px; width: 40px; height: 40px;
             background: #f8bbd0; border: 3px solid #880e4f; border-radius: 10px; z-index: -1;
@@ -105,58 +41,77 @@
         .piggy-jar::before { left: 20px; transform: rotate(-20deg); }
         .piggy-jar::after { right: 20px; transform: rotate(20deg); }
         
+        /* Delete Button on Piggy Jar */
+        .piggy-delete {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: white;
+            border: 2px solid #880e4f;
+            color: #880e4f;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .piggy-delete:hover { background: #880e4f; color: white; }
+
         .piggy-nose {
             width: 60px; height: 35px; background: #f48fb1; border: 2px solid #880e4f;
             border-radius: 50%; margin: 0 auto 10px auto; display: flex; justify-content: center; align-items: center; gap: 10px;
-            animation: breathe 3s infinite ease-in-out;
         }
-        @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         .nostril { width: 8px; height: 12px; background: #880e4f; border-radius: 50%; }
 
-        /* === RETRO RECEIPT (Improved) === */
-        .retro-wrapper { font-family: 'Chakra Petch', sans-serif; }
+        .piggy-progress {
+            height: 25px; background: white; border: 2px solid #880e4f; border-radius: 15px; overflow: hidden;
+        }
+        .piggy-fill {
+            height: 100%; background: repeating-linear-gradient(45deg, #e91e63, #e91e63 10px, #ff4081 10px, #ff4081 20px);
+        }
+
+        /* === RETRO & OTHER STYLES === */
+        .retro-wrapper { font-family: 'Chakra Petch', sans-serif; color: #2b2b2b; }
         .receipt-paper {
-            background-color: #fffdf0;
-            padding: 25px 20px;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            margin-top: 10px;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+            background-color: #f6f6f6; padding: 25px 20px; position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-top: 10px;
         }
         .jagged-top {
             position: absolute; top: -10px; left: 0; width: 100%; height: 10px;
-            background: linear-gradient(135deg, transparent 33%, #fffdf0 33%, #fffdf0 66%, transparent 66%) -5px 0 / 10px 100% repeat-x;
+            background: linear-gradient(135deg, transparent 33%, #f6f6f6 33%, #f6f6f6 66%, transparent 66%) -5px 0 / 10px 100% repeat-x;
             transform: rotate(180deg);
         }
         .jagged-bottom {
             position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px;
-            background: linear-gradient(135deg, transparent 33%, #fffdf0 33%, #fffdf0 66%, transparent 66%) -5px 0 / 10px 100% repeat-x;
+            background: linear-gradient(135deg, transparent 33%, #f6f6f6 33%, #f6f6f6 66%, transparent 66%) -5px 0 / 10px 100% repeat-x;
         }
         .retro-input {
             font-family: 'VT323', monospace; font-size: 1.3rem; border: none; border-bottom: 1px dotted #888;
-            background: transparent; text-align: right; width: 90px; color: #2b2b2b; transition: 0.3s;
+            background: transparent; text-align: right; width: 90px; color: #2b2b2b;
         }
-        .retro-input:focus { border-bottom: 2px solid var(--k-purple); outline: none; background: rgba(156, 39, 176, 0.05); }
-        .vt-font { font-family: 'VT323', monospace; }
+        .vt-font { font-family: 'VT323', monospace; font-size: 1.4rem; }
+        .retro-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; line-height: 1.4; }
+        .retro-brand { font-family: 'VT323', monospace; font-size: 2rem; border-bottom: 2px solid black; display: inline-block; margin-bottom: 10px; }
+        .hrs-input { width: 40px; text-align: center; background: #ddd; }
+        .amt-text { font-family: 'VT323', monospace; font-size: 1.3rem; min-width: 70px; text-align: right; display: inline-block; }
 
-        /* === WORTHINESS (New) === */
-        .meter-container { height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; position: relative; }
-        .meter-fill { height: 100%; transition: width 1s ease-in-out; }
-        .day-block { display: inline-block; width: 15px; height: 15px; margin: 2px; border-radius: 3px; background: #bdbdbd; }
-        .day-block.active { background: #9c27b0; animation: popIn 0.3s forwards; }
-        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
-
+        /* Receipt Modal */
+        #miniReceiptNode { width: 300px; margin: 0 auto; background: #fff; padding: 20px; border: 1px dashed #333; text-align: center; font-family: 'VT323', monospace; }
+        
+        /* Worthiness Styles */
+        .worth-result-box {
+            background: #212121; color: #fff; padding: 15px; border-radius: 12px; margin-top: 20px;
+            box-shadow: 3px 3px 0 #9c27b0;
+        }
     </style>
 </head>
 <body>
-    <div class="container py-3" style="max-width: 550px;">
+    <div class="container py-3" style="max-width: 600px;">
         
-        <div class="d-flex justify-content-between align-items-center mb-4 ps-2">
-            <div>
-                <h4 class="fw-bold m-0" style="color: var(--k-dark);"><i class="bi bi-skull-fill text-purple"></i> Kuromi Pro</h4>
-                <small class="text-muted" style="font-size: 0.75rem;">Manage Money like a Boss</small>
-            </div>
-            <span class="badge bg-dark rounded-pill px-3">v2.5 Remix</span>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold m-0"><i class="bi bi-skull-fill"></i> Kuromi Pro</h4>
+            <span class="badge bg-dark">v2.1 Worthy</span>
         </div>
 
         <ul class="nav nav-pills nav-fill mb-4" id="pills-tab" role="tablist">
@@ -168,153 +123,156 @@
 
         <div class="tab-content">
             
-            <div class="tab-pane fade show active animate__animated animate__fadeIn" id="content-dash">
-                <div class="glass-card balance-card p-4 text-center mb-3">
-                    <small class="text-white-50 text-uppercase letter-spacing-2">Net Balance</small>
+            <div class="tab-pane fade show active" id="content-dash">
+                <div class="k-card text-center p-4 text-white" style="background: linear-gradient(135deg, #212121 0%, #4a148c 100%); border: none;">
+                    <small>คงเหลือสุทธิ</small>
                     <h1 class="display-3 fw-bold mb-0">฿{{ "{:,.2f}".format(balance) }}</h1>
-                    <div class="d-flex justify-content-center gap-4 mt-3">
-                        <div class="text-success bg-white rounded-pill px-3 py-1 shadow-sm"><i class="bi bi-arrow-down"></i> รับ {{ "{:,.0f}".format(income) }}</div>
-                        <div class="text-danger bg-white rounded-pill px-3 py-1 shadow-sm"><i class="bi bi-arrow-up"></i> จ่าย {{ "{:,.0f}".format(expense) }}</div>
-                    </div>
                 </div>
 
-                <div class="glass-card p-3 mb-4">
+                <div class="k-card p-3">
                     <form action="/add" method="POST">
                         <div class="row g-2 mb-2">
                             <div class="col-6">
-                                <select name="type" class="form-select border-2 border-dark rounded-pill" id="typeSelect" onchange="toggleCategories()">
-                                    <option value="expense">😈 จ่ายออก</option>
-                                    <option value="income">😇 รับเข้า</option>
+                                <select name="type" class="form-select border-dark" id="typeSelect" onchange="toggleCategories()">
+                                    <option value="expense">😈 รายจ่าย</option>
+                                    <option value="income">😇 รายรับ</option>
                                 </select>
                             </div>
                             <div class="col-6">
-                                <select name="category" class="form-select border-2 border-dark rounded-pill" id="categorySelect"></select>
+                                <select name="category" class="form-select border-dark" id="categorySelect"></select>
                             </div>
                         </div>
                         <div class="input-group mb-2">
-                            <span class="input-group-text bg-dark text-white border-dark rounded-start-pill">฿</span>
-                            <input type="number" step="0.01" name="amount" class="form-control border-2 border-dark fw-bold rounded-end-pill" placeholder="0.00" required>
+                            <input type="number" step="0.01" name="amount" class="form-control border-dark fw-bold" placeholder="0.00" required>
                         </div>
-                        <input type="text" name="note" class="form-control border-2 border-dark rounded-pill mb-2" placeholder="📝 รายการอะไร...">
-                        <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold">บันทึกรายการ</button>
+                        <input type="text" name="note" class="form-control border-dark mb-2" placeholder="รายการอะไร...">
+                        <button type="submit" class="btn btn-dark w-100 fw-bold">บันทึก</button>
                     </form>
                 </div>
 
-                <h6 class="fw-bold ms-2 text-muted mb-2"><i class="bi bi-clock-history"></i> ประวัติล่าสุด</h6>
-                <div class="glass-card p-0" style="max-height: 400px; overflow-y: auto;">
-                    {% for t in transactions %}
-                    <div class="tx-item p-3 d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="tx-icon shadow-sm">{{ t.icon }}</div>
-                            <div style="line-height: 1.2;">
-                                <div class="fw-bold">{{ t.note }}</div>
-                                <small class="text-muted" style="font-size: 0.75rem;">{{ t.date }} • {{ t.category }}</small>
-                            </div>
-                        </div>
-                        <div class="text-end">
-                            <div class="{{ 'text-success' if t.type == 'income' else 'text-danger' }} fw-bold fs-5">
-                                {{ '+' if t.type == 'income' else '-' }}{{ "{:,.2f}".format(t.amount) }}
-                            </div>
-                            <div class="btn-group">
-                                <button class="btn btn-sm btn-light text-secondary rounded-circle" onclick='showReceipt("{{ t.note }}", "{{ t.amount }}", "{{ t.date }}", "{{ t.type }}")'><i class="bi bi-receipt"></i></button>
-                                <a href="/delete/{{ t.id }}" class="btn btn-sm btn-light text-danger rounded-circle" onclick="return confirmDelete(this.href); return false;"><i class="bi bi-trash"></i></a>
-                            </div>
-                        </div>
+                <h6 class="fw-bold ms-2">ล่าสุด</h6>
+                {% for t in transactions %}
+                <div class="k-card p-2 px-3 d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <div class="fw-bold">{{ t.note }}</div>
+                        <small class="text-muted">{{ t.date }} <span class="badge bg-light text-dark border">{{ t.category }}</span></small>
                     </div>
-                    {% endfor %}
+                    <div class="text-end d-flex align-items-center gap-2">
+                        <span class="{{ 'text-success' if t.type == 'income' else 'text-danger' }} fw-bold">
+                            {{ '+' if t.type == 'income' else '-' }}{{ "{:,.2f}".format(t.amount) }}
+                        </span>
+                        <button class="btn btn-sm btn-outline-dark border-0" onclick='showReceipt("{{ t.note }}", "{{ t.amount }}", "{{ t.date }}", "{{ t.type }}")'>🧾</button>
+                        <a href="/delete/{{ t.id }}" class="text-secondary" onclick="return confirm('ลบ?')"><i class="bi bi-x-circle"></i></a>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
 
             <div class="tab-pane fade retro-wrapper" id="content-salary">
                 <div class="d-flex justify-content-center gap-2 mb-2">
-                    <button class="btn btn-sm btn-dark rounded-pill px-3 shadow" onclick="savePreset()"><i class="bi bi-floppy2-fill"></i> Save Preset</button>
-                    <button class="btn btn-sm btn-warning rounded-pill px-3 shadow" onclick="capture('salary-slip-node', 'MySalarySlip')"><i class="bi bi-camera-fill"></i> Capture</button>
+                    <button class="btn btn-sm btn-dark rounded-pill px-3" onclick="savePreset()"><i class="bi bi-save-fill"></i> จำค่า</button>
+                    <button class="btn btn-sm btn-warning rounded-pill px-3" onclick="capture('salary-slip-node', 'MySalarySlip')"><i class="bi bi-camera-fill"></i> บันทึกภาพ</button>
                 </div>
                 
                 <div class="receipt-paper" id="salary-slip-node">
                     <div class="jagged-top"></div>
                     <div class="text-center">
-                        <div class="retro-brand fs-1 fw-bold">PAYROLL SLIP</div>
-                        <div class="small opacity-50 mb-3 vt-font">MONTHLY / 2025</div>
+                        <div class="retro-brand">PAYROLL SLIP</div>
+                        <div class="small opacity-50 mb-3">MONTHLY / 2025</div>
                     </div>
 
-                    <div class="fw-bold text-decoration-underline mb-2">1. INCOME</div>
-                    <div class="retro-row"><span>Base Salary</span> <input type="text" id="s_salary" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_salary', '') }}"></div>
-                    <div class="retro-row"><span>Allowance</span> <input type="text" id="s_col" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_col', '') }}"></div>
-                    <div class="retro-row"><span>Level/Pos</span> <input type="text" id="s_level" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_level', '') }}"></div>
-                    <div class="retro-row"><span>Diligence</span> <input type="text" id="s_diligence" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_diligence', '') }}"></div>
-                    <div class="retro-row"><span>Food/Other</span> <input type="text" id="s_food" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_food', '') }}"></div>
+                    <div class="fw-bold text-decoration-underline mb-2">1. รายได้ (INCOME)</div>
+                    <div class="retro-row"><span>เงินเดือน (Base)</span> <input type="text" id="s_salary" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_salary', '') }}"></div>
+                    <div class="retro-row"><span>ค่าครองชีพ (COL)</span> <input type="text" id="s_col" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_col', '') }}"></div>
+                    <div class="retro-row"><span>ค่าตำแหน่ง (Level)</span> <input type="text" id="s_level" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_level', '') }}"></div>
+                    <div class="retro-row"><span>เบี้ยขยัน</span> <input type="text" id="s_diligence" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_diligence', '') }}"></div>
+                    <div class="retro-row"><span>ค่าอาหาร</span> <input type="text" id="s_food" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_food', '') }}"></div>
+                    <div class="retro-row"><span>อื่นๆ</span> <input type="text" id="s_other" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_other', '') }}"></div>
 
-                    <div class="fw-bold text-decoration-underline mb-2 mt-3">2. OVERTIME <span class="small fw-normal opacity-50">(Rate: <span id="ot_rate_display">0.00</span>)</span></div>
+                    <div class="fw-bold text-decoration-underline mb-2 mt-3">2. ล่วงเวลา (OVERTIME)</div>
+                    <div class="text-end small opacity-50 mb-1">Rate: <span id="ot_rate_display">0.00</span> B/Hr</div>
                     
                     <div class="retro-row">
-                        <span>OT x1.5 (Hr)</span>
+                        <span>OT x1.5 (ชม.)</span>
                         <div class="d-flex align-items-center">
-                            <input type="text" id="ot_15_hr" class="retro-input hrs-input me-2 text-center bg-light" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_15_hr', '') }}" style="width:40px;">
+                            <input type="text" id="ot_15_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_15_hr', '') }}">
                             <span class="amt-text" id="ot_15_amt">0.00</span>
                         </div>
                     </div>
                     <div class="retro-row">
-                        <span>OT x1.3 (Hr)</span>
+                        <span>OT x1.3 (ชม.)</span>
                         <div class="d-flex align-items-center">
-                            <input type="text" id="ot_13_hr" class="retro-input hrs-input me-2 text-center bg-light" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_13_hr', '') }}" style="width:40px;">
+                            <input type="text" id="ot_13_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_13_hr', '') }}">
                             <span class="amt-text" id="ot_13_amt">0.00</span>
                         </div>
                     </div>
-                    
+                    <div class="retro-row">
+                        <span>OT x3.0 (ชม.)</span>
+                        <div class="d-flex align-items-center">
+                            <input type="text" id="ot_30_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_30_hr', '') }}">
+                            <span class="amt-text" id="ot_30_amt">0.00</span>
+                        </div>
+                    </div>
+                    <div class="retro-row">
+                        <span>ค่าอาหาร OT</span>
+                        <span class="amt-text" id="ot_food_amt">0.00</span>
+                    </div>
+
                     <div class="retro-row fw-bold mt-2 pt-1 border-top border-dark border-dashed">
-                        <span>GROSS TOTAL</span>
+                        <span>รวมรายได้ (GROSS)</span>
                         <span class="amt-text" id="gross_income">0.00</span>
                     </div>
 
-                    <div class="fw-bold text-decoration-underline mb-2 mt-3">3. DEDUCTION</div>
-                    <div class="retro-row"><span>Tax</span> <input type="text" id="d_tax" class="retro-input text-danger" onblur="calcSalary()" value="{{ salary_preset.get('d_tax', '') }}"></div>
-                    <div class="retro-row"><span>SSO</span> <input type="text" id="d_sso" class="retro-input text-danger" onblur="calcSalary()" value="{{ salary_preset.get('d_sso', '') }}"></div>
-                    <div class="retro-row"><span>Provident Fund</span> <input type="text" id="d_fund" class="retro-input text-danger" onblur="calcSalary()" value="{{ salary_preset.get('d_fund', '') }}"></div>
+                    <div class="fw-bold text-decoration-underline mb-2 mt-3">3. รายการหัก (DEDUCT)</div>
+                    <div class="retro-row"><span>ภาษี (Tax)</span> <input type="text" id="d_tax" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_tax', '') }}"></div>
+                    <div class="retro-row"><span>ประกันสังคม (SSO)</span> <input type="text" id="d_sso" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_sso', '') }}"></div>
+                    <div class="retro-row"><span>กองทุน/สหกรณ์</span> <input type="text" id="d_fund" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_fund', '') }}"></div>
 
                     <div style="border-bottom: 3px double black; margin: 15px 0;"></div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold fs-4">NET PAY</span>
+                        <span class="fw-bold fs-5">NET PAY</span>
                         <span class="vt-font fw-bold fs-1" id="net_pay_display">0.00</span>
                     </div>
 
                     <div class="jagged-bottom"></div>
                 </div>
-                
-                <form action="/add" method="POST" id="salaryForm" class="mt-3">
-                    <input type="hidden" name="type" value="income">
-                    <input type="hidden" name="category" value="เงินเดือน">
-                    <input type="hidden" name="note" value="เงินเดือนสุทธิ">
-                    <input type="hidden" name="amount" id="final_salary_amount">
-                    <button type="button" onclick="submitSalary()" class="btn btn-outline-dark w-100 rounded-pill fw-bold">
-                        <i class="bi bi-box-arrow-in-down"></i> บันทึกเข้ากระเป๋า
-                    </button>
-                </form>
+
+                <div class="mt-4">
+                     <form action="/add" method="POST" id="salaryForm">
+                        <input type="hidden" name="type" value="income">
+                        <input type="hidden" name="category" value="เงินเดือน">
+                        <input type="hidden" name="note" value="เงินเดือนสุทธิ">
+                        <input type="hidden" name="amount" id="final_salary_amount">
+                        <button type="button" onclick="submitSalary()" class="btn w-100 py-2 border-2 border-dark fw-bold btn-light">
+                            <i class="bi bi-box-arrow-down"></i> บันทึกเข้า Dashboard
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <div class="tab-pane fade" id="content-saving">
                 <div class="d-grid mb-3">
-                    <button class="btn btn-dark rounded-pill fw-bold shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#addGoalForm">
-                        <i class="bi bi-plus-lg"></i> สร้างเป้าหมายใหม่
+                    <button class="btn btn-outline-danger border-2 rounded-pill fw-bold" data-bs-toggle="collapse" data-bs-target="#addGoalForm">
+                        <i class="bi bi-plus-lg"></i> สร้างกระปุกใหม่
                     </button>
                 </div>
                 
                 <div class="collapse mb-3" id="addGoalForm">
-                    <div class="glass-card p-3 bg-white">
+                    <div class="k-card p-3">
                         <form action="/add_saving_goal" method="POST">
                             <input type="text" name="name" class="form-control border-dark mb-2" placeholder="ชื่อกระปุก (เช่น iPad)" required>
                             <input type="number" name="target" class="form-control border-dark mb-2" placeholder="เป้าหมาย (บาท)" required>
-                            <button type="submit" class="btn btn-danger w-100 rounded-pill">ยืนยัน</button>
+                            <button type="submit" class="btn btn-danger w-100">สร้างเลย</button>
                         </form>
                     </div>
                 </div>
 
                 {% for goal in savings %}
-                <div class="position-relative animate__animated animate__zoomIn">
+                <div class="position-relative">
                     <div class="piggy-jar" id="piggy-{{ goal.id }}">
-                        <a href="/delete_saving/{{ goal.id }}" class="piggy-delete" onclick="return confirmDelete(this.href); return false;">
-                            <i class="bi bi-x-lg"></i>
+                        <a href="/delete_saving/{{ goal.id }}" class="piggy-delete" onclick="return confirm('จะทุบกระปุกทิ้งเลยหรอ? (เงินเก็บหายนะ!)')">
+                            <i class="bi bi-trash-fill"></i>
                         </a>
 
                         <div class="piggy-nose">
@@ -322,106 +280,101 @@
                         </div>
                         
                         <div class="text-center mb-2">
-                            <h4 class="fw-bold m-0 text-uppercase" style="color: #880e4f; letter-spacing: 1px;">{{ goal.name }}</h4>
-                            <div class="badge bg-white text-danger border border-danger mt-1">
-                                {{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }}
-                            </div>
+                            <h5 class="fw-bold m-0" style="color: #880e4f;">{{ goal.name }}</h5>
+                            <small class="text-muted">{{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }} บาท</small>
                         </div>
                         
                         {% set pct = (goal.current / goal.target * 100) | round(1) %}
-                        <div class="progress border border-2 border-danger" style="height: 25px; border-radius: 15px;">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width: {{ pct }}%;">{{ pct }}%</div>
+                        <div class="piggy-progress mb-3">
+                            <div class="piggy-fill" style="width: {{ pct }}%;"></div>
                         </div>
+                        
+                        <div class="text-center opacity-25" style="font-size:0.7rem;">Kuromi Money Savings</div>
                     </div>
                     
-                    <div class="glass-card p-2 d-flex justify-content-between align-items-center mb-4 mx-3" style="margin-top: -20px; position: relative; z-index: 2;">
-                        <button class="btn btn-sm btn-link text-secondary" onclick="capture('piggy-{{ goal.id }}', 'Saving_{{ goal.name }}')">
-                            <i class="bi bi-camera"></i>
+                    <div class="d-flex justify-content-between align-items-center px-2 mb-4">
+                        <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="capture('piggy-{{ goal.id }}', 'Saving_{{ goal.name }}')">
+                            <i class="bi bi-camera-fill"></i> เซฟรูป
                         </button>
                         <form action="/update_saving" method="POST" class="d-flex gap-2">
                             <input type="hidden" name="goal_id" value="{{ goal.id }}">
-                            <input type="number" name="amount" class="form-control form-control-sm border-secondary text-center fw-bold" style="width: 80px;" placeholder="Amount" required>
-                            <button type="submit" name="action" value="deposit" class="btn btn-sm btn-danger rounded-circle shadow-sm"><i class="bi bi-piggy-bank-fill"></i></button>
-                            <button type="submit" name="action" value="withdraw" class="btn btn-sm btn-outline-danger rounded-circle"><i class="bi bi-dash-lg"></i></button>
+                            <input type="number" name="amount" class="form-control border-danger text-danger fw-bold form-control-sm" style="width: 100px;" placeholder="จำนวนเงิน" required>
+                            
+                            <button type="submit" name="action" value="deposit" class="btn btn-sm btn-danger rounded-circle" title="หยอดกระปุก">
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                            
+                            <button type="submit" name="action" value="withdraw" class="btn btn-sm btn-outline-danger rounded-circle border-2" title="แคะกระปุก" onclick="return confirm('จะแคะเงินออกมาใช้จริงหรอ?')">
+                                <i class="bi bi-hammer"></i>
+                            </button>
                         </form>
                     </div>
                 </div>
                 {% else %}
-                <div class="text-center py-5 text-muted opacity-50">
-                    <i class="bi bi-piggy-bank display-1"></i>
-                    <p class="mt-2">ยังไม่มีเป้าหมายเลย<br>สร้างสักอันสิ!</p>
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-piggy-bank fs-1"></i>
+                    <p>ยังไม่มีกระปุกออมสิน</p>
                 </div>
                 {% endfor %}
             </div>
 
             <div class="tab-pane fade" id="content-worth">
-                <div class="glass-card p-4">
-                    <h3 class="fw-bold text-center mb-4"><i class="bi bi-stars text-warning"></i> ความคุ้มค่า</h3>
+                <div class="k-card p-4">
+                    <h3 class="fw-bold text-center mb-4"><i class="bi bi-gem"></i> คุ้มไหมที่จะซื้อ?</h3>
                     
-                    <div class="form-floating mb-2">
-                        <input type="text" id="w_name" class="form-control border-dark fw-bold" placeholder="Item">
-                        <label>อยากได้อะไร?</label>
+                    <div class="mb-3">
+                        <label class="fw-bold small">ของที่อยากได้</label>
+                        <input type="text" id="w_name" class="form-control border-dark" placeholder="เช่น iPhone 15, ชาบู">
                     </div>
-                    <div class="form-floating mb-3">
-                        <input type="number" id="w_price" class="form-control border-dark fw-bold text-center text-primary fs-2" placeholder="Price">
-                        <label>ราคาเท่าไหร่ (บาท)</label>
+                    <div class="mb-3">
+                        <label class="fw-bold small">ราคา (บาท)</label>
+                        <input type="number" id="w_price" class="form-control border-dark fw-bold text-center display-1" style="font-size: 2rem;" placeholder="0.00">
                     </div>
 
-                    <div class="accordion mb-3" id="wageAccordion">
-                        <div class="accordion-item border-dark rounded overflow-hidden">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed bg-light text-dark small py-2" type="button" data-bs-toggle="collapse" data-bs-target="#wageCollapse">
-                                    <i class="bi bi-gear-fill me-2"></i> ตั้งค่าฐานเงินเดือน
-                                </button>
-                            </h2>
-                            <div id="wageCollapse" class="accordion-collapse collapse" data-bs-parent="#wageAccordion">
-                                <div class="accordion-body bg-light">
-                                    <div class="row g-2">
-                                        <div class="col-6">
-                                            <label class="small text-muted">ค่าแรง/ชม.</label>
-                                            <input type="number" id="w_hourly" class="form-control form-control-sm border-secondary text-end" value="{{ settings.hourly_wage }}">
-                                        </div>
-                                        <div class="col-6">
-                                            <label class="small text-muted">รายรับ/เดือน</label>
-                                            <input type="number" id="w_monthly" class="form-control form-control-sm border-secondary text-end" value="{{ salary_preset.get('s_salary', 0) }}" readonly>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-sm btn-dark w-100 mt-2" onclick="saveWage()">บันทึกค่าแรง</button>
-                                </div>
+                    <div class="p-3 bg-light rounded border border-secondary mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small fw-bold text-muted"><i class="bi bi-gear-fill"></i> ตั้งค่ารายได้</span>
+                            <form action="/update_settings" method="POST" class="d-inline" id="wageForm">
+                                <button type="submit" class="btn btn-sm btn-link text-decoration-none p-0">บันทึกค่าแรง</button>
+                                <input type="hidden" name="hourly_wage" id="hidden_wage">
+                            </form>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="small text-muted">ค่าแรง/ชม.</label>
+                                <input type="number" id="w_hourly" class="form-control form-control-sm border-secondary text-end" value="{{ settings.hourly_wage }}">
+                            </div>
+                            <div class="col-6">
+                                <label class="small text-muted">เงินเดือน (อิงตามสลิป)</label>
+                                <input type="number" id="w_monthly" class="form-control form-control-sm border-secondary text-end" value="{{ salary_preset.get('s_salary', 0) }}" readonly>
                             </div>
                         </div>
+                        <small class="text-muted" style="font-size: 0.7rem;">*แก้ค่าแรง/ชม. แล้วกดบันทึกได้ ส่วนเงินเดือนดึงมาจากหน้าสลิป</small>
                     </div>
 
-                    <button onclick="calcWorth()" class="btn btn-dark w-100 rounded-pill fw-bold py-3 shadow">
-                        <i class="bi bi-magic"></i> วิเคราะห์ความคุ้ม
+                    <button onclick="calcWorth()" class="btn btn-dark w-100 rounded-pill fw-bold py-2 shadow-sm">
+                        <i class="bi bi-magic"></i> ทำนายความคุ้ม
                     </button>
 
-                    <div id="w_result" class="d-none mt-4 animate__animated animate__fadeInUp">
+                    <div id="w_result" class="d-none animate__animated animate__fadeIn">
                         
-                        <div class="text-center mb-3">
-                            <div class="text-muted small">ต้องทำงานแลกมาด้วยเวลา...</div>
-                            <h1 class="display-2 fw-bold text-dark mb-0"><span id="res_hours">0</span> <span class="fs-6 text-muted">ชม.</span></h1>
+                        <div class="worth-result-box text-center">
+                            <div class="opacity-75 small">คุณต้องทำงานแลกมาด้วยเวลา</div>
+                            <div class="display-4 fw-bold text-warning" id="res_hours">0</div>
+                            <div class="small">ชั่วโมง <span id="res_days" class="text-muted"></span></div>
+                            <div class="mt-2 text-white-50" style="font-size: 0.8rem;">(คิดจากค่าแรงรายชั่วโมงของคุณ)</div>
                         </div>
 
-                        <div class="mb-3">
-                            <div class="d-flex flex-wrap justify-content-center" id="day_blocks_container"></div>
-                            <div class="text-center small text-muted mt-1" id="res_days_text"></div>
+                        <div id="res_monthly_box" class="alert alert-danger border-2 border-danger mt-3 text-center d-none">
+                            <i class="bi bi-exclamation-triangle-fill"></i> ภาระรายเดือน
+                            <h2 class="fw-bold my-1"><span id="res_percent">0</span>%</h2>
+                            <small>ของเงินเดือนคุณจะหายไปทันที!</small>
                         </div>
 
-                        <div id="res_monthly_box" class="d-none">
-                            <label class="small fw-bold text-danger">กินพื้นที่เงินเดือน</label>
-                            <div class="progress mb-2" style="height: 20px;">
-                                <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" id="res_percent_bar" style="width: 0%"></div>
-                            </div>
-                            <div class="text-end small text-danger fw-bold"><span id="res_percent">0</span>%</div>
-                        </div>
-
-                        <div class="alert alert-dark text-center mt-3 fw-bold border-2" id="w_verdict" style="background: #e1bee7; color: #4a148c; border-color: #9c27b0;">
-                            ...
-                        </div>
+                        <div class="text-center mt-3 fw-bold" id="w_verdict" style="color: var(--k-purple);"></div>
                         
-                        <button class="btn btn-outline-secondary w-100 rounded-pill btn-sm" onclick="capture('content-worth', 'Worthiness_Check')">
-                             📸 บันทึกผลลัพธ์
+                        <button class="btn btn-outline-dark w-100 mt-3 rounded-pill" onclick="capture('content-worth', 'Worthiness_Check')">
+                             📸 แคปไว้เตือนใจ
                         </button>
                     </div>
                 </div>
@@ -433,20 +386,18 @@
     <div class="modal fade" id="receiptModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 bg-transparent">
-                <div id="miniReceiptNode" class="mx-auto bg-white p-3 shadow-lg" style="width: 320px; font-family: 'VT323', monospace; position: relative;">
-                    <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 100px; height: 30px; background: rgba(255,255,255,0.4); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 5px rgba(0,0,0,0.1);"></div>
-                    
-                    <div class="text-center border-bottom border-dark border-2 pb-2 mb-2">
-                        <i class="bi bi-skull-fill"></i> KUROMI STORE <i class="bi bi-skull-fill"></i>
+                <div id="miniReceiptNode">
+                    <div style="border-bottom: 2px double black; margin-bottom: 10px; padding-bottom:5px;">
+                        <i class="bi bi-skull"></i> KUROMI RECEIPT
                     </div>
-                    <div class="d-flex justify-content-between mb-2 small">
-                        <span>DT: <span id="r_date"></span></span>
-                        <span>POS: #001</span>
+                    <div class="text-start mb-2">
+                        DATE: <span id="r_date"></span><br>
+                        TIME: --:--
                     </div>
-                    <table class="w-100 fs-5 mb-3">
+                    <table class="w-100 mb-3" style="border-collapse: collapse;">
                         <tr style="border-bottom: 1px dashed black;">
                             <td class="text-start">ITEM</td>
-                            <td class="text-end">THB</td>
+                            <td class="text-end">AMT</td>
                         </tr>
                         <tr>
                             <td class="text-start pt-2" id="r_note">...</td>
@@ -457,16 +408,15 @@
                             <td></td>
                         </tr>
                     </table>
-                    <div class="border-top border-dark border-2 pt-2 mt-2 d-flex justify-content-between fs-4 fw-bold">
-                        <span>TOTAL</span>
-                        <span id="r_total">...</span>
+                    <div style="border-top: 2px dashed black; padding-top: 10px; margin-top: 20px;">
+                        TOTAL: <span class="fw-bold" id="r_total">...</span>
                     </div>
-                    <div class="text-center mt-3 small opacity-50">THANK YOU COME AGAIN</div>
-                    <div class="mt-2" style="height: 40px; background: repeating-linear-gradient(to right, #000 0px, #000 2px, transparent 2px, transparent 5px);"></div>
+                    <div class="mt-3 small opacity-50">THANK YOU!</div>
+                    <div class="barcode mt-2" style="height: 30px; background: repeating-linear-gradient(to right, #000 0px, #000 2px, transparent 2px, transparent 4px);"></div>
                 </div>
                 <div class="text-center mt-3">
-                    <button class="btn btn-light fw-bold rounded-pill px-4 shadow" onclick="capture('miniReceiptNode', 'MiniSlip')">
-                        <i class="bi bi-download"></i> Save Image
+                    <button class="btn btn-light fw-bold rounded-pill shadow" onclick="capture('miniReceiptNode', 'MiniSlip')">
+                        <i class="bi bi-download"></i> บันทึกเป็นภาพ
                     </button>
                 </div>
             </div>
@@ -475,29 +425,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // === SweetAlert Confirmation ===
-        function confirmDelete(url) {
-            Swal.fire({
-                title: 'แน่ใจนะ?',
-                text: "ลบแล้วเอากลับคืนมาไม่ได้นะ!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'ลบเลย!',
-                cancelButtonText: 'เก็บไว้ก่อน'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = url;
-                }
-            })
-            return false; 
-        }
-
-        // === Capture ===
+        // === Common Functions ===
         function capture(id, filename) {
             const node = document.getElementById(id);
-            html2canvas(node, { scale: 2, backgroundColor: null }).then(canvas => {
+            html2canvas(node, { scale: 2, backgroundColor: null, useCORS: true }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = filename + '_' + Date.now() + '.png';
                 link.href = canvas.toDataURL();
@@ -505,7 +436,6 @@
             });
         }
         
-        // === Receipt Modal ===
         const receiptModal = new bootstrap.Modal(document.getElementById('receiptModal'));
         function showReceipt(note, amount, date, type) {
             document.getElementById('r_note').innerText = note;
@@ -517,7 +447,6 @@
             receiptModal.show();
         }
 
-        // === Categories ===
         const cats = { expense: ["ของกิน", "เดินทาง", "ช้อปปิ้ง", "บิล", "อื่นๆ"], income: ["เงินเดือน", "โบนัส", "ขายของ", "อื่นๆ"] };
         function toggleCategories() {
             const type = document.getElementById("typeSelect").value;
@@ -545,16 +474,17 @@
 
         function calcSalary() {
             let salary = getVal('s_salary'); let col = getVal('s_col'); let level = getVal('s_level');
-            let diligence = getVal('s_diligence'); let food = getVal('s_food'); 
+            let diligence = getVal('s_diligence'); let food = getVal('s_food'); let other = getVal('s_other');
             let baseForOt = salary + col + level;
             let rate = baseForOt > 0 ? (baseForOt / 30) / 8 : 0;
             setTxt('ot_rate_display', rate);
             
-            let h15 = getVal('ot_15_hr'); let h13 = getVal('ot_13_hr');
-            let amt15 = rate * 1.5 * h15; let amt13 = rate * 1.3 * h13;
-            setTxt('ot_15_amt', amt15); setTxt('ot_13_amt', amt13);
+            let h15 = getVal('ot_15_hr'); let h13 = getVal('ot_13_hr'); let h30 = getVal('ot_30_hr');
+            let amt15 = rate * 1.5 * h15; let amt13 = rate * 1.3 * h13; let amt30 = rate * 3.0 * h30;
+            setTxt('ot_15_amt', amt15); setTxt('ot_13_amt', amt13); setTxt('ot_30_amt', amt30);
             
-            let gross = baseForOt + diligence + food + amt15 + amt13;
+            let otFoodAmt = (h15 + h13 + h30) * 20; setTxt('ot_food_amt', otFoodAmt);
+            let gross = baseForOt + diligence + food + other + amt15 + amt13 + amt13 + amt30 + otFoodAmt;
             setTxt('gross_income', gross);
             
             let totalDeduct = getVal('d_tax') + getVal('d_sso') + getVal('d_fund');
@@ -562,84 +492,65 @@
             setTxt('net_pay_display', net);
             document.getElementById('final_salary_amount').value = net;
         }
-        function submitSalary() { 
-            calcSalary(); 
-            Swal.fire({
-                title: 'ยอดถูกต้องไหม?',
-                text: "จะบันทึกเงินเดือนเข้า Dashboard แล้วนะ",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'จัดไป!'
-            }).then((result) => {
-                if(result.isConfirmed) document.getElementById('salaryForm').submit();
-            });
-        }
+        function submitSalary() { calcSalary(); if(confirm("ยืนยันการบันทึกยอดเงินเดือน?")) document.getElementById('salaryForm').submit(); }
         function savePreset() {
             const preset = {}; document.querySelectorAll('.retro-input').forEach(input => preset[input.id] = input.value);
             fetch('/save_salary_preset', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(preset) })
-            .then(() => Swal.fire('Saved!', 'จำค่า Payroll เรียบร้อย', 'success'));
+            .then(() => alert("จำค่าเรียบร้อย!"));
         }
         
-        // === Worthiness Logic (Updated) ===
-        function saveWage() {
-            const formData = new FormData();
-            formData.append('hourly_wage', document.getElementById('w_hourly').value);
-            fetch('/update_settings', { method: 'POST', body: formData })
-            .then(() => Swal.fire('Saved', 'บันทึกค่าแรงแล้ว', 'success'));
-        }
+        // === Worthiness Logic (NEW) ===
+        document.getElementById('w_hourly').addEventListener('input', function() {
+            document.getElementById('hidden_wage').value = this.value;
+        });
 
         function calcWorth() {
             let price = parseFloat(document.getElementById('w_price').value) || 0;
             let hourly = parseFloat(document.getElementById('w_hourly').value) || 0;
             let monthly = parseFloat(document.getElementById('w_monthly').value) || 0;
 
-            if(hourly <= 0) { Swal.fire('เดี๋ยวก่อน', 'ใส่ค่าแรงต่อชั่วโมงก่อนสิ (ถ้าไม่รู้ให้ใส่ 0 แล้วกดตั้งค่า)', 'warning'); return; }
-            if(price <= 0) { Swal.fire('ราคาเท่าไหร่?', 'ใส่ราคาของก่อนนะ', 'warning'); return; }
+            if(hourly <= 0) { 
+                alert("กรุณาระบุ 'ค่าแรงต่อชั่วโมง' ก่อนครับ (ถ้าไม่รู้ ลองเอาเงินเดือนหาร 240 ดูเล่นๆ)"); 
+                return; 
+            }
+            if(price <= 0) { alert("ใส่ราคาของก่อนสิครับ!"); return; }
 
-            // 1. Calculate Hours & Days
+            // 1. Calculate Hours
             let hoursNeeded = price / hourly;
             document.getElementById('res_hours').innerText = hoursNeeded.toFixed(1);
             
-            // Visual Blocks (1 block = 1 day or 8 hours)
-            let days = hoursNeeded / 8;
-            let container = document.getElementById('day_blocks_container');
-            container.innerHTML = '';
-            
-            let blockCount = Math.ceil(days);
-            if(blockCount > 30) blockCount = 30; // Max limit visually
-
-            for(let i=0; i<blockCount; i++) {
-                let div = document.createElement('div');
-                div.className = 'day-block';
-                div.style.animationDelay = (i * 0.05) + 's';
-                setTimeout(() => div.classList.add('active'), 100);
-                container.appendChild(div);
+            let daysText = "";
+            if (hoursNeeded > 8) {
+                let days = (hoursNeeded / 8).toFixed(1);
+                daysText = `(หรือประมาณ ${days} วันทำงาน)`;
             }
-            document.getElementById('res_days_text').innerText = `ประมาณ ${days.toFixed(1)} วันทำงาน ${blockCount >= 30 ? '(หรือมากกว่านั้น!)' : ''}`;
-
-            // 2. Monthly Impact
+            document.getElementById('res_days').innerText = daysText;
+            
+            // 2. Calculate Monthly Impact (if price > 1000 and monthly salary is known)
             let monthBox = document.getElementById('res_monthly_box');
             let verdict = document.getElementById('w_verdict');
+            
+            // Show result container
             document.getElementById('w_result').classList.remove('d-none');
 
             if (price >= 1000 && monthly > 0) {
                 let pct = (price / monthly) * 100;
                 document.getElementById('res_percent').innerText = pct.toFixed(1);
-                document.getElementById('res_percent_bar').style.width = Math.min(pct, 100) + '%';
                 monthBox.classList.remove('d-none');
                 
-                if(pct > 50) verdict.innerText = "😱 ตายสงบศพสีชมพู (เกินครึ่งเงินเดือน!)";
-                else if(pct > 20) verdict.innerText = "🤔 คิดหนักๆ เงินเก็บสะเทือน";
+                if(pct > 50) verdict.innerText = "😱 โอ้โห! เกินครึ่งเงินเดือน คิดดีๆ นะ!";
+                else if(pct > 20) verdict.innerText = "🤔 ก็หนักอยู่นะ กระทบเงินเก็บแน่";
                 else verdict.innerText = "💸 ซื้อความสุข จัดไป!";
             } else {
                 monthBox.classList.add('d-none');
                 if(hoursNeeded < 4) verdict.innerText = "😎 ชิลๆ ทำงานแป๊บเดียวก็ได้คืน";
-                else verdict.innerText = "✌️ แลกด้วยหยาดเหงื่อ";
+                else verdict.innerText = "✌️ สู้ๆ แลกมาด้วยหยาดเหงื่อ";
             }
         }
 
         // Init
         calcSalary();
+        document.getElementById('hidden_wage').value = document.getElementById('w_hourly').value;
     </script>
 </body>
 </html>
