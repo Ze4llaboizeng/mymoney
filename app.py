@@ -19,6 +19,7 @@ def load_data():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
+            # Ensure all keys exist
             for key in default_data:
                 if key not in data: data[key] = default_data[key]
             return data
@@ -41,16 +42,26 @@ def index():
     total_expense = sum(t["amount"] for t in transactions if t["type"] == "expense")
     balance = total_income - total_expense
     
+    # Calculate Summary by Category for the "Recap Slip"
+    category_summary = {}
+    for t in transactions:
+        cat = t["category"]
+        if cat not in category_summary:
+            category_summary[cat] = {"amount": 0, "type": t["type"]}
+        category_summary[cat]["amount"] += t["amount"]
+
     return render_template("index.html", 
                            transactions=reversed(transactions), 
                            income=total_income, expense=total_expense, balance=balance,
-                           settings=settings, savings=savings, salary_preset=salary_preset)
+                           settings=settings, savings=savings, salary_preset=salary_preset,
+                           category_summary=category_summary)
 
 @app.route("/add", methods=["POST"])
 def add_transaction():
     data = load_data()
     try: amount = float(request.form.get("amount"))
     except: amount = 0.0
+    
     new_data = {
         "id": str(uuid.uuid4()),
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -63,6 +74,40 @@ def add_transaction():
     save_data(data)
     return redirect(url_for("index"))
 
+@app.route("/edit_transaction", methods=["POST"])
+def edit_transaction():
+    t_id = request.form.get("id")
+    data = load_data()
+    
+    for t in data["transactions"]:
+        if t["id"] == t_id:
+            try: t["amount"] = float(request.form.get("amount"))
+            except: pass
+            t["type"] = request.form.get("type")
+            t["category"] = request.form.get("category")
+            t["note"] = request.form.get("note")
+            # Update date to now or keep original? Let's keep original for record but you can change it if needed
+            break
+            
+    save_data(data)
+    return redirect(url_for("index"))
+
+@app.route("/reset_month", methods=["POST"])
+def reset_month():
+    # Clear only transactions, keep savings and settings
+    data = load_data()
+    data["transactions"] = []
+    save_data(data)
+    return redirect(url_for("index"))
+
+@app.route("/delete/<string:t_id>")
+def delete_transaction(t_id):
+    data = load_data()
+    data["transactions"] = [t for t in data["transactions"] if t.get("id") != t_id]
+    save_data(data)
+    return redirect(url_for("index"))
+
+# ... (Saving & Salary routes remain similar) ...
 @app.route("/save_salary_preset", methods=["POST"])
 def save_salary_preset():
     preset = request.json
@@ -70,8 +115,6 @@ def save_salary_preset():
     data["salary_preset"] = preset
     save_data(data)
     return jsonify({"status": "success"})
-
-# --- SAVINGS LOGIC ---
 
 @app.route("/add_saving_goal", methods=["POST"])
 def add_saving_goal():
@@ -99,7 +142,6 @@ def update_saving():
     action = request.form.get("action") 
     try: amount = float(request.form.get("amount"))
     except: amount = 0.0
-    
     if amount <= 0: return redirect(url_for("index"))
 
     data = load_data()
@@ -128,14 +170,6 @@ def update_saving():
                         "note": f"แคะกระปุก: {goal['name']}"
                     })
             break
-            
-    save_data(data)
-    return redirect(url_for("index"))
-
-@app.route("/delete/<string:t_id>")
-def delete_transaction(t_id):
-    data = load_data()
-    data["transactions"] = [t for t in data["transactions"] if t.get("id") != t_id]
     save_data(data)
     return redirect(url_for("index"))
 
