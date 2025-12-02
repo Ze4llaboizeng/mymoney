@@ -71,7 +71,7 @@ def save_salary_preset():
     save_data(data)
     return jsonify({"status": "success"})
 
-# --- SAVINGS LOGIC UPDATED ---
+# --- SAVINGS LOGIC ---
 
 @app.route("/add_saving_goal", methods=["POST"])
 def add_saving_goal():
@@ -89,7 +89,6 @@ def add_saving_goal():
 @app.route("/delete_saving/<string:goal_id>")
 def delete_saving(goal_id):
     data = load_data()
-    # ลบกระปุกที่มี ID ตรงกัน
     data["savings_goals"] = [g for g in data["savings_goals"] if g.get("id") != goal_id]
     save_data(data)
     return redirect(url_for("index"))
@@ -97,20 +96,16 @@ def delete_saving(goal_id):
 @app.route("/update_saving", methods=["POST"])
 def update_saving():
     goal_id = request.form.get("goal_id")
-    action = request.form.get("action") # 'deposit' หรือ 'withdraw'
-    try: 
-        amount = float(request.form.get("amount"))
-    except: 
-        amount = 0.0
+    action = request.form.get("action") 
+    try: amount = float(request.form.get("amount"))
+    except: amount = 0.0
     
-    if amount <= 0: return redirect(url_for("index")) # ห้ามใส่ 0 หรือติดลบ
+    if amount <= 0: return redirect(url_for("index"))
 
     data = load_data()
     for goal in data["savings_goals"]:
         if goal["id"] == goal_id:
-            
             if action == "deposit":
-                # หยอดเงิน: เพิ่มในกระปุก, หักจากกระเป๋า (Expense)
                 goal["current"] += amount
                 data["transactions"].append({
                     "id": str(uuid.uuid4()),
@@ -120,12 +115,8 @@ def update_saving():
                     "amount": amount,
                     "note": f"ออมเงินเพื่อ: {goal['name']}"
                 })
-                
             elif action == "withdraw":
-                # แคะเงิน: ลดในกระปุก, เพิ่มเข้ากระเป๋า (Income)
-                # เช็คก่อนว่ามีให้แคะไหม
-                real_withdraw = min(amount, goal["current"]) # แคะได้ไม่เกินที่มี
-                
+                real_withdraw = min(amount, goal["current"])
                 if real_withdraw > 0:
                     goal["current"] -= real_withdraw
                     data["transactions"].append({
