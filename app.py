@@ -7,6 +7,7 @@ from datetime import datetime
 app = Flask(__name__)
 DATA_FILE = "data.json"
 
+# --- Data Management ---
 def load_data():
     default_data = {
         "transactions": [],
@@ -27,6 +28,7 @@ def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
+# --- Routes ---
 @app.route("/")
 def index():
     data = load_data()
@@ -69,6 +71,8 @@ def save_salary_preset():
     save_data(data)
     return jsonify({"status": "success"})
 
+# --- SAVINGS LOGIC UPDATED ---
+
 @app.route("/add_saving_goal", methods=["POST"])
 def add_saving_goal():
     data = load_data()
@@ -82,16 +86,32 @@ def add_saving_goal():
     save_data(data)
     return redirect(url_for("index"))
 
+@app.route("/delete_saving/<string:goal_id>")
+def delete_saving(goal_id):
+    data = load_data()
+    # ลบกระปุกที่มี ID ตรงกัน
+    data["savings_goals"] = [g for g in data["savings_goals"] if g.get("id") != goal_id]
+    save_data(data)
+    return redirect(url_for("index"))
+
 @app.route("/update_saving", methods=["POST"])
 def update_saving():
     goal_id = request.form.get("goal_id")
-    try: amount = float(request.form.get("amount"))
-    except: amount = 0.0
+    action = request.form.get("action") # 'deposit' หรือ 'withdraw'
+    try: 
+        amount = float(request.form.get("amount"))
+    except: 
+        amount = 0.0
+    
+    if amount <= 0: return redirect(url_for("index")) # ห้ามใส่ 0 หรือติดลบ
+
     data = load_data()
     for goal in data["savings_goals"]:
         if goal["id"] == goal_id:
-            goal["current"] += amount
-            if amount > 0:
+            
+            if action == "deposit":
+                # หยอดเงิน: เพิ่มในกระปุก, หักจากกระเป๋า (Expense)
+                goal["current"] += amount
                 data["transactions"].append({
                     "id": str(uuid.uuid4()),
                     "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -100,7 +120,24 @@ def update_saving():
                     "amount": amount,
                     "note": f"ออมเงินเพื่อ: {goal['name']}"
                 })
+                
+            elif action == "withdraw":
+                # แคะเงิน: ลดในกระปุก, เพิ่มเข้ากระเป๋า (Income)
+                # เช็คก่อนว่ามีให้แคะไหม
+                real_withdraw = min(amount, goal["current"]) # แคะได้ไม่เกินที่มี
+                
+                if real_withdraw > 0:
+                    goal["current"] -= real_withdraw
+                    data["transactions"].append({
+                        "id": str(uuid.uuid4()),
+                        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                        "type": "income",
+                        "category": "เงินออม",
+                        "amount": real_withdraw,
+                        "note": f"แคะกระปุก: {goal['name']}"
+                    })
             break
+            
     save_data(data)
     return redirect(url_for("index"))
 
@@ -108,6 +145,15 @@ def update_saving():
 def delete_transaction(t_id):
     data = load_data()
     data["transactions"] = [t for t in data["transactions"] if t.get("id") != t_id]
+    save_data(data)
+    return redirect(url_for("index"))
+
+@app.route("/update_settings", methods=["POST"])
+def update_settings():
+    try: wage = float(request.form.get("hourly_wage", 0.0))
+    except: wage = 0.0
+    data = load_data()
+    data["settings"]["hourly_wage"] = wage
     save_data(data)
     return redirect(url_for("index"))
 
