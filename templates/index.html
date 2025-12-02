@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuromi Money & Retro Slip</title>
+    <title>Kuromi Money Manager</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Chakra+Petch:wght@400;600&family=VT323&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -25,7 +25,7 @@
         /* Kuromi Card */
         .k-card { background: white; border: 2px solid var(--k-dark); border-radius: 18px; box-shadow: 4px 4px 0px rgba(0,0,0,0.8); margin-bottom: 15px; }
 
-        /* === PIGGY BANK UI (CSS Art) === */
+        /* === PIGGY BANK UI === */
         .piggy-jar {
             background: #f8bbd0;
             border: 3px solid #880e4f;
@@ -35,7 +35,6 @@
             margin-bottom: 25px;
             box-shadow: 0 5px 15px rgba(233, 30, 99, 0.2);
         }
-        /* หูหมู */
         .piggy-jar::before, .piggy-jar::after {
             content: ''; position: absolute; top: -15px; width: 40px; height: 40px;
             background: #f8bbd0; border: 3px solid #880e4f; border-radius: 10px; z-index: -1;
@@ -43,14 +42,12 @@
         .piggy-jar::before { left: 20px; transform: rotate(-20deg); }
         .piggy-jar::after { right: 20px; transform: rotate(20deg); }
         
-        /* จมูกหมู */
         .piggy-nose {
             width: 60px; height: 35px; background: #f48fb1; border: 2px solid #880e4f;
             border-radius: 50%; margin: 0 auto 10px auto; display: flex; justify-content: center; align-items: center; gap: 10px;
         }
         .nostril { width: 8px; height: 12px; background: #880e4f; border-radius: 50%; }
 
-        /* Progress Bar ในกระปุก */
         .piggy-progress {
             height: 25px; background: white; border: 2px solid #880e4f; border-radius: 15px; overflow: hidden;
         }
@@ -59,7 +56,7 @@
             transition: width 0.5s;
         }
 
-        /* === RETRO RECEIPT THEME (Scoped) === */
+        /* === RETRO RECEIPT THEME (Copy from Salary.html) === */
         .retro-wrapper {
             font-family: 'Chakra Petch', sans-serif;
             color: #2b2b2b;
@@ -82,13 +79,15 @@
             background: linear-gradient(135deg, transparent 33%, #f6f6f6 33%, #f6f6f6 66%, transparent 66%) -5px 0 / 10px 100% repeat-x;
         }
         .retro-input {
-            font-family: 'VT323', monospace; font-size: 1.4rem; border: none; border-bottom: 1px dotted #888;
-            background: transparent; text-align: right; width: 80px; color: #2b2b2b;
+            font-family: 'VT323', monospace; font-size: 1.3rem; border: none; border-bottom: 1px dotted #888;
+            background: transparent; text-align: right; width: 90px; color: #2b2b2b;
         }
         .retro-input:focus { outline: none; background: #e0e0e0; border-bottom: 1px solid black; }
         .vt-font { font-family: 'VT323', monospace; font-size: 1.4rem; }
-        .retro-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .retro-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; line-height: 1.4; }
         .retro-brand { font-family: 'VT323', monospace; font-size: 2rem; border-bottom: 2px solid black; display: inline-block; margin-bottom: 10px; }
+        .hrs-input { width: 40px; text-align: center; background: #ddd; }
+        .amt-text { font-family: 'VT323', monospace; font-size: 1.3rem; min-width: 70px; text-align: right; display: inline-block; }
 
     </style>
 </head>
@@ -165,40 +164,68 @@
                         <div class="small opacity-50 mb-3">MONTHLY / 2025</div>
                     </div>
 
-                    <div class="fw-bold text-decoration-underline mb-2">1. INCOME (รายได้)</div>
-                    <div class="retro-row"><span>เงินเดือน (Base)</span> <input type="text" id="s_base" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_base', 0) }}"></div>
-                    <div class="retro-row"><span>ค่าครองชีพ</span> <input type="text" id="s_other" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_other', 0) }}"></div>
-                    <div class="retro-row"><span>ค่าอาหาร</span> <input type="text" id="s_food" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_food', 0) }}"></div>
+                    <div class="fw-bold text-decoration-underline mb-2">1. รายได้ (INCOME)</div>
+                    <div class="retro-row"><span>เงินเดือน (Base)</span> <input type="text" id="s_salary" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_salary', '') }}"></div>
+                    <div class="retro-row"><span>ค่าครองชีพ (COL)</span> <input type="text" id="s_col" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_col', '') }}"></div>
+                    <div class="retro-row"><span>ค่าตำแหน่ง (Level)</span> <input type="text" id="s_level" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_level', '') }}"></div>
+                    <div class="retro-row"><span>เบี้ยขยัน</span> <input type="text" id="s_diligence" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_diligence', '') }}"></div>
+                    <div class="retro-row"><span>ค่าอาหาร</span> <input type="text" id="s_food" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_food', '') }}"></div>
+                    <div class="retro-row"><span>อื่นๆ</span> <input type="text" id="s_other" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_other', '') }}"></div>
 
-                    <div class="fw-bold text-decoration-underline mb-2 mt-3">2. OVERTIME (โอที)</div>
-                    <div class="text-end small opacity-50 mb-1">Rate: <span id="ot_rate_display">0</span>/hr</div>
+                    <div class="fw-bold text-decoration-underline mb-2 mt-3">2. ล่วงเวลา (OVERTIME)</div>
+                    <div class="text-end small opacity-50 mb-1">Rate: <span id="ot_rate_display">0.00</span> B/Hr</div>
+                    
                     <div class="retro-row">
-                        <span>OT x1.5 (hr)</span>
+                        <span>OT x1.5 (ชม.)</span>
                         <div class="d-flex align-items-center">
-                            <input type="text" id="ot_15_hr" class="retro-input me-2" style="width:40px; background:#ddd; text-align:center;" placeholder="hr" onblur="calcSalary()" value="{{ salary_preset.get('ot_15_hr', 0) }}">
-                            <span class="vt-font" id="ot_15_amt">0.00</span>
+                            <input type="text" id="ot_15_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_15_hr', '') }}">
+                            <span class="amt-text" id="ot_15_amt">0.00</span>
                         </div>
                     </div>
+                    <div class="retro-row">
+                        <span>OT x1.3 (ชม.)</span>
+                        <div class="d-flex align-items-center">
+                            <input type="text" id="ot_13_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_13_hr', '') }}">
+                            <span class="amt-text" id="ot_13_amt">0.00</span>
+                        </div>
+                    </div>
+                    <div class="retro-row">
+                        <span>OT x3.0 (ชม.)</span>
+                        <div class="d-flex align-items-center">
+                            <input type="text" id="ot_30_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_30_hr', '') }}">
+                            <span class="amt-text" id="ot_30_amt">0.00</span>
+                        </div>
+                    </div>
+                    <div class="retro-row">
+                        <span>ค่าอาหาร OT (20บ.)</span>
+                        <span class="amt-text" id="ot_food_amt">0.00</span>
+                    </div>
 
-                    <div class="fw-bold text-decoration-underline mb-2 mt-3">3. DEDUCT (หัก)</div>
-                    <div class="retro-row"><span>ประกันสังคม</span> <input type="text" id="d_sso" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_sso', 750) }}"></div>
-                    <div class="retro-row"><span>ภาษี/ขาดลา</span> <input type="text" id="d_tax" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_tax', 0) }}"></div>
+                    <div class="retro-row fw-bold mt-2 pt-1 border-top border-dark border-dashed">
+                        <span>รวมรายได้ (GROSS)</span>
+                        <span class="amt-text" id="gross_income">0.00</span>
+                    </div>
+
+                    <div class="fw-bold text-decoration-underline mb-2 mt-3">3. รายการหัก (DEDUCT)</div>
+                    <div class="retro-row"><span>ภาษี (Tax)</span> <input type="text" id="d_tax" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_tax', '') }}"></div>
+                    <div class="retro-row"><span>ประกันสังคม (SSO)</span> <input type="text" id="d_sso" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_sso', '') }}"></div>
+                    <div class="retro-row"><span>กองทุน/สหกรณ์</span> <input type="text" id="d_fund" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_fund', '') }}"></div>
 
                     <div style="border-bottom: 3px double black; margin: 15px 0;"></div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold fs-5">NET PAY</span>
-                        <span class="vt-font fw-bold fs-2" id="net_pay_display">0.00</span>
+                        <span class="fw-bold fs-5">NET PAY (สุทธิ)</span>
+                        <span class="vt-font fw-bold fs-1" id="net_pay_display">0.00</span>
                     </div>
 
                     <div class="mt-4 pt-3 border-top border-dark border-dashed">
                          <form action="/add" method="POST" id="salaryForm">
                             <input type="hidden" name="type" value="income">
                             <input type="hidden" name="category" value="เงินเดือน">
-                            <input type="hidden" name="note" value="เงินเดือน (Slip)">
+                            <input type="hidden" name="note" value="เงินเดือนสุทธิ">
                             <input type="hidden" name="amount" id="final_salary_amount">
                             <button type="button" onclick="submitSalary()" class="btn w-100 py-2 border-2 border-dark fw-bold" style="font-family:'Chakra Petch';">
-                                <i class="bi bi-box-arrow-down"></i> บันทึกเข้าแอป
+                                <i class="bi bi-box-arrow-down"></i> บันทึกเข้า Dashboard
                             </button>
                         </form>
                     </div>
@@ -274,12 +301,13 @@
         }
         toggleCategories();
 
-        // --- Retro Salary Logic ---
+        // --- Retro Salary Logic (Full Port) ---
         function safeEval(str) {
             try { return new Function('return ' + str)() || 0; } catch { return 0; }
         }
         function getVal(id) {
             let el = document.getElementById(id);
+            if(!el) return 0;
             let valStr = el.value;
             if(/[+\-*/]/.test(valStr)) {
                 let res = safeEval(valStr);
@@ -288,55 +316,81 @@
             }
             return parseFloat(valStr) || 0;
         }
+        function setTxt(id, val) {
+            document.getElementById(id).innerText = val.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+        }
 
         function calcSalary() {
-            let base = getVal('s_base');
-            let other = getVal('s_other');
+            // 1. Income
+            let salary = getVal('s_salary');
+            let col = getVal('s_col');
+            let level = getVal('s_level');
+            let diligence = getVal('s_diligence');
             let food = getVal('s_food');
-            
-            // Calc Rate (Base / 30 / 8)
+            let other = getVal('s_other');
+
+            // OT Rate Calculation: (Base + COL + Level) / 30 / 8
+            let baseForOt = salary + col + level;
             let rate = 0;
-            if(base > 0) rate = base / 30 / 8;
-            document.getElementById('ot_rate_display').innerText = rate.toFixed(2);
+            if (baseForOt > 0) rate = (baseForOt / 30) / 8;
+            setTxt('ot_rate_display', rate);
 
-            // OT
-            let ot15_hr = getVal('ot_15_hr');
-            let ot15_amt = rate * 1.5 * ot15_hr;
-            document.getElementById('ot_15_amt').innerText = ot15_amt.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+            // OT Amounts
+            let h15 = getVal('ot_15_hr');
+            let h13 = getVal('ot_13_hr');
+            let h30 = getVal('ot_30_hr');
 
-            // Deduct
-            let sso = getVal('d_sso');
+            let amt15 = rate * 1.5 * h15;
+            let amt13 = rate * 1.3 * h13;
+            let amt30 = rate * 3.0 * h30;
+
+            setTxt('ot_15_amt', amt15);
+            setTxt('ot_13_amt', amt13);
+            setTxt('ot_30_amt', amt30);
+
+            // OT Food (20 THB per hr)
+            let totalOtHrs = h15 + h13 + h30;
+            let otFoodAmt = totalOtHrs * 20;
+            setTxt('ot_food_amt', otFoodAmt);
+
+            // Gross Income
+            let gross = baseForOt + diligence + food + other + amt15 + amt13 + amt30 + otFoodAmt;
+            setTxt('gross_income', gross);
+
+            // 2. Deduct
             let tax = getVal('d_tax');
+            let sso = getVal('d_sso');
+            let fund = getVal('d_fund');
+            let totalDeduct = tax + sso + fund;
 
-            let totalIncome = base + other + food + ot15_amt;
-            let totalDeduct = sso + tax;
-            let net = totalIncome - totalDeduct;
-
-            document.getElementById('net_pay_display').innerText = net.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+            // 3. Net Pay
+            let net = gross - totalDeduct;
+            setTxt('net_pay_display', net);
+            
+            // Set for form submit
             document.getElementById('final_salary_amount').value = net;
         }
 
         function submitSalary() {
             calcSalary();
-            if(confirm("ยืนยันการบันทึกยอดเงินเดือน?")) {
+            if(confirm("ยืนยันการบันทึกยอดเงินเดือนนี้?")) {
                 document.getElementById('salaryForm').submit();
             }
         }
 
         function savePreset() {
-            const data = {
-                s_base: document.getElementById('s_base').value,
-                s_other: document.getElementById('s_other').value,
-                s_food: document.getElementById('s_food').value,
-                ot_15_hr: document.getElementById('ot_15_hr').value,
-                d_sso: document.getElementById('d_sso').value,
-                d_tax: document.getElementById('d_tax').value
-            };
+            // Collect all inputs to save
+            const preset = {};
+            const inputs = document.querySelectorAll('.retro-input');
+            inputs.forEach(input => {
+                preset[input.id] = input.value;
+            });
+            
             fetch('/save_salary_preset', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            }).then(() => alert("จำค่าให้แล้ว! เดือนหน้ามาใหม่ได้เลย"));
+                body: JSON.stringify(preset)
+            }).then(() => alert("จำค่าทุกช่องเรียบร้อย!"));
         }
 
         // Init
