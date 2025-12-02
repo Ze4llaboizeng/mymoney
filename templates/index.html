@@ -3,307 +3,367 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuromi Money Manager</title>
+    <title>Kuromi Master App</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=VT323&display=swap" rel="stylesheet">
     
     <style>
-        /* Kuromi Theme Variables */
+        /* --- THEME CONFIG --- */
         :root {
-            --kuromi-bg: #f3e5f5; /* ม่วงอ่อนมาก */
-            --kuromi-dark: #2c2c2c; /* ดำเทา */
-            --kuromi-purple: #9c27b0; /* ม่วงหลัก */
-            --kuromi-pink: #e91e63; /* ชมพู */
-            --kuromi-accent: #ba68c8;
+            --k-bg: #f3e5f5;
+            --k-dark: #212121;
+            --k-purple: #9c27b0;
+            --k-purple-light: #e1bee7;
+            --k-pink: #e91e63;
         }
 
         body { 
-            background-color: var(--kuromi-bg); 
+            background-color: var(--k-bg); 
             font-family: 'Kanit', sans-serif; 
-            color: var(--kuromi-dark);
+            color: var(--k-dark);
+            padding-bottom: 80px; 
         }
 
-        /* Card Styles */
-        .card {
-            border: 2px solid var(--kuromi-dark);
-            border-radius: 20px;
-            box-shadow: 4px 4px 0px var(--kuromi-dark);
-            background: white;
-        }
-
-        .card-balance {
-            background: var(--kuromi-dark);
-            color: white;
-            border: none;
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background-color: var(--kuromi-purple);
-            border: 2px solid var(--kuromi-dark);
-            color: white;
+        /* --- TABS --- */
+        .nav-pills .nav-link {
+            color: var(--k-dark);
+            background-color: white;
+            border: 2px solid var(--k-dark);
+            margin: 0 5px;
+            border-radius: 50px;
             font-weight: bold;
-            box-shadow: 2px 2px 0px var(--kuromi-dark);
         }
-        .btn-primary:hover, .btn-primary:active {
-            background-color: var(--kuromi-accent);
-            border-color: var(--kuromi-dark);
-            transform: translate(1px, 1px);
-            box-shadow: 1px 1px 0px var(--kuromi-dark);
+        .nav-pills .nav-link.active {
+            background-color: var(--k-dark);
+            color: var(--k-purple-light);
+            border-color: var(--k-dark);
+            transform: scale(1.05);
         }
 
-        .btn-pink {
-            background-color: var(--kuromi-pink);
+        /* --- CARDS --- */
+        .k-card {
+            background: white;
+            border: 2px solid var(--k-dark);
+            border-radius: 15px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.8);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .k-header {
+            background: var(--k-dark);
             color: white;
-            border: 2px solid var(--kuromi-dark);
-            box-shadow: 2px 2px 0px var(--kuromi-dark);
+            padding: 10px 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Custom UI Elements */
-        .skull-icon { font-size: 1.5rem; color: var(--kuromi-purple); }
-        .text-income { color: #00c853; font-weight: bold; }
-        .text-expense { color: var(--kuromi-pink); font-weight: bold; }
-        
-        /* Time Cost Badge */
-        .time-cost-badge {
-            background-color: var(--kuromi-dark);
-            color: #ff9ff3;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 5px;
+        /* --- SALARY SHEET STYLE (Retro Receipt) --- */
+        .salary-sheet {
+            background-image: radial-gradient(#ccc 1px, transparent 1px);
+            background-size: 10px 10px;
+            padding: 15px;
+        }
+        .salary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 2px;
+        }
+        .salary-input {
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            border: none;
+            background: rgba(156, 39, 176, 0.1);
+            text-align: right;
+            width: 100px;
+            color: var(--k-purple);
+            border-radius: 5px;
+        }
+        .salary-input:focus { outline: 2px solid var(--k-purple); background: white; }
+
+        /* --- SAVINGS --- */
+        .progress-container {
+            height: 25px;
+            background-color: #eee;
+            border-radius: 20px;
+            border: 2px solid var(--k-dark);
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar-custom {
+            height: 100%;
+            background-color: var(--k-pink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+
+        /* --- FLOATING ACTION --- */
+        .btn-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            z-index: 1000;
+            border: 2px solid var(--k-dark);
+            box-shadow: 3px 3px 0px var(--k-dark);
         }
     </style>
 </head>
 <body>
-    <div class="container py-4" style="max-width: 600px;">
+    <div class="container py-3" style="max-width: 600px;">
         
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold text-uppercase">
-                <i class="bi bi-emoji-dizzy-fill text-danger"></i> Kuromi Money
-            </h4>
-            <button class="btn btn-sm btn-outline-dark bg-white" data-bs-toggle="modal" data-bs-target="#settingsModal">
-                <i class="bi bi-gear-fill"></i> ตั้งค่าค่าแรง
-            </button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="fw-bold m-0 text-uppercase"><i class="bi bi-skull-fill text-dark"></i> Kuromi Fin.</h3>
+            <span class="badge bg-dark rounded-pill">Termux Edition</span>
         </div>
 
-        <div class="card card-balance mb-4">
-            <div class="card-body text-center py-4 position-relative">
-                <div style="position: absolute; top: 10px; right: 15px; opacity: 0.2;">
-                    <i class="bi bi-heart-fill fs-1"></i>
+        <ul class="nav nav-pills nav-fill mb-4" id="pills-tab" role="tablist">
+            <li class="nav-item"><button class="nav-link active" id="tab-dash" data-bs-toggle="pill" data-bs-target="#content-dash"><i class="bi bi-wallet2"></i> ภาพรวม</button></li>
+            <li class="nav-item"><button class="nav-link" id="tab-salary" data-bs-toggle="pill" data-bs-target="#content-salary"><i class="bi bi-calculator"></i> เงินเดือน</button></li>
+            <li class="nav-item"><button class="nav-link" id="tab-saving" data-bs-toggle="pill" data-bs-target="#content-saving"><i class="bi bi-piggy-bank-fill"></i> เงินออม</button></li>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+            
+            <div class="tab-pane fade show active" id="content-dash">
+                <div class="k-card text-center p-4" style="background: linear-gradient(135deg, #212121 0%, #4a148c 100%); color: white; border: none;">
+                    <small class="opacity-75">เงินคงเหลือสุทธิ</small>
+                    <h1 class="display-3 fw-bold mb-0">฿{{ "{:,.2f}".format(balance) }}</h1>
                 </div>
-                
-                <small class="text-white-50">เงินเหลือตอนนี้</small>
-                <h1 class="display-3 fw-bold mb-2">฿{{ "{:,.2f}".format(balance) }}</h1>
-                
-                <div class="row g-2 mt-3">
-                    <div class="col-6 border-end border-secondary">
-                        <small class="text-success">รายรับรวม</small><br>
-                        <span class="fs-5">+{{ "{:,.2f}".format(income) }}</span>
-                    </div>
-                    <div class="col-6">
-                        <small class="text-danger">รายจ่ายรวม</small><br>
-                        <span class="fs-5">-{{ "{:,.2f}".format(expense) }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        {% if settings.hourly_wage == 0 %}
-        <div class="alert alert-dark border-2 border-dark mb-4 d-flex align-items-center" role="alert">
-            <i class="bi bi-exclamation-circle-fill me-2 fs-4"></i>
-            <div>
-                ยังไม่ได้ตั้งค่าแรง! <a href="#" data-bs-toggle="modal" data-bs-target="#settingsModal" class="fw-bold text-dark">ตั้งค่าที่นี่</a> เพื่อคำนวณเวลาทำงาน
-            </div>
-        </div>
-        {% endif %}
-
-        {% if expense > 0 %}
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill text-primary"></i> สัดส่วนการใช้เงิน</h6>
-                <div style="height: 200px; position: relative;">
-                    <canvas id="expenseChart"></canvas>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="d-grid mb-4">
-            <button class="btn btn-primary btn-lg rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#addForm">
-                <i class="bi bi-plus-circle-fill"></i> จดรายการใหม่
-            </button>
-        </div>
-
-        <div class="collapse mb-4" id="addForm">
-            <div class="card">
-                <div class="card-body bg-white rounded-4">
+                <div class="k-card p-3">
+                    <h6 class="fw-bold"><i class="bi bi-pencil-square"></i> จดบันทึก</h6>
                     <form action="/add" method="POST">
-                        <div class="row g-2 mb-3">
+                        <div class="row g-2 mb-2">
                             <div class="col-6">
-                                <label class="small fw-bold">ประเภท</label>
-                                <select name="type" class="form-select border-2 border-dark" id="typeSelect" onchange="toggleCategories()">
+                                <select name="type" class="form-select border-dark" id="typeSelect" onchange="toggleCategories()">
                                     <option value="expense">😈 รายจ่าย</option>
                                     <option value="income">😇 รายรับ</option>
                                 </select>
                             </div>
                             <div class="col-6">
-                                <label class="small fw-bold">หมวดหมู่</label>
-                                <select name="category" class="form-select border-2 border-dark" id="categorySelect"></select>
+                                <select name="category" class="form-select border-dark" id="categorySelect"></select>
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label class="small fw-bold">จำนวนเงิน (บาท)</label>
-                            <input type="number" step="0.01" name="amount" id="amountInput" class="form-control form-control-lg border-2 border-dark fw-bold" required placeholder="0.00" oninput="calculateTime()">
-                            
-                            <div id="timeCostResult" class="mt-2 d-none">
-                                <span class="time-cost-badge">
-                                    <i class="bi bi-hourglass-split"></i> ต้องทำงาน: <span id="timeCostText">0 ชม.</span>
-                                </span>
-                            </div>
+                        <div class="input-group mb-2">
+                            <input type="number" step="0.01" name="amount" class="form-control border-dark fw-bold" placeholder="0.00" required>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label class="small fw-bold">โน้ต</label>
-                            <input type="text" name="note" class="form-control border-2 border-dark" placeholder="ซื้ออะไรมาน้า...">
-                        </div>
-                        <button type="submit" class="btn btn-pink w-100 fw-bold py-2 rounded-pill">บันทึกเลย!</button>
+                        <input type="text" name="note" class="form-control border-dark mb-2" placeholder="รายการอะไร...">
+                        <button type="submit" class="btn btn-dark w-100 fw-bold">บันทึก</button>
                     </form>
                 </div>
-            </div>
-        </div>
 
-        <div class="modal fade" id="settingsModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-2 border-dark">
-                    <div class="modal-header bg-dark text-white">
-                        <h5 class="modal-title"><i class="bi bi-stopwatch-fill"></i> ตั้งค่าค่าแรงของฉัน</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="/update_settings" method="POST">
-                        <div class="modal-body">
-                            <p class="small text-muted">ใส่รายได้เฉลี่ยต่อชั่วโมงของคุณ เพื่อให้แอปคำนวณว่าของชิ้นนี้ต้องทำงานแลกมากี่ชั่วโมง</p>
-                            <label class="form-label fw-bold">ค่าแรงต่อชั่วโมง (บาท/ชม.)</label>
-                            <input type="number" step="1" name="hourly_wage" id="wageInput" class="form-control border-2 border-dark" value="{{ settings.hourly_wage }}" required>
-                        </div>
-                        <div class="modal-footer border-0">
-                            <button type="submit" class="btn btn-primary w-100">บันทึก</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <h6 class="fw-bold mb-3 text-secondary">📜 รายการล่าสุด</h6>
-        <div class="d-flex flex-column gap-2">
-            {% for t in transactions %}
-            <div class="card transaction-item border-start-0 border-end-0 border-top-0 border-bottom-2 rounded-0 shadow-none mb-1">
-                <div class="card-body p-2 d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-light border border-dark d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                            <i class="bi {{ 'bi-arrow-down-left text-success' if t.type == 'income' else 'bi-bag-heart-fill text-danger' }}"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold">{{ t.note }} <span class="badge bg-dark text-white rounded-pill fw-light" style="font-size: 0.6rem;">{{ t.category }}</span></div>
-                            <small class="text-muted" style="font-size: 0.75rem;">{{ t.date }}</small>
-                        </div>
+                <h6 class="fw-bold ms-2">ล่าสุด</h6>
+                {% for t in transactions %}
+                <div class="k-card p-2 mb-2 d-flex justify-content-between align-items-center px-3">
+                    <div>
+                        <div class="fw-bold">{{ t.note }}</div>
+                        <small class="text-muted">{{ t.date }} <span class="badge bg-light text-dark border ms-1">{{ t.category }}</span></small>
                     </div>
                     <div class="text-end">
-                        <div class="{{ 'text-income' if t.type == 'income' else 'text-expense' }}">
+                        <span class="{{ 'text-success' if t.type == 'income' else 'text-danger' }} fw-bold fs-5">
                             {{ '+' if t.type == 'income' else '-' }}{{ "{:,.2f}".format(t.amount) }}
+                        </span>
+                        <a href="/delete/{{ t.id }}" class="text-secondary ms-2" onclick="return confirm('ลบ?')"><i class="bi bi-x-circle"></i></a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="tab-pane fade" id="content-salary">
+                <div class="k-card">
+                    <div class="k-header">
+                        <span><i class="bi bi-receipt"></i> สลิปเงินเดือน (Payroll)</span>
+                        <button class="btn btn-sm btn-outline-light" onclick="savePreset()"><i class="bi bi-save"></i> จำค่า</button>
+                    </div>
+                    <div class="salary-sheet">
+                        <div class="mb-2 fw-bold text-success text-decoration-underline">1. รายรับ (Income)</div>
+                        <div class="salary-row"><span>เงินเดือนฐาน</span> <input type="text" id="s_base" class="salary-input" onblur="calcSalary()" value="{{ salary_preset.get('s_base', 0) }}"></div>
+                        <div class="salary-row"><span>ค่าครองชีพ/อื่นๆ</span> <input type="text" id="s_other" class="salary-input" onblur="calcSalary()" value="{{ salary_preset.get('s_other', 0) }}"></div>
+                        
+                        <div class="mb-2 mt-3 fw-bold text-primary text-decoration-underline">2. โอที (OT)</div>
+                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                            <span>ฐานคิด OT: <span id="ot_base_display">0</span></span>
+                            <span>เรท: <span id="ot_rate_display">0</span> บ./ชม.</span>
                         </div>
-                        {% if t.id %}
-                        <a href="/delete/{{ t.id }}" class="text-muted opacity-50 text-decoration-none" onclick="return confirm('ลบรายการนี้?')">
-                            <small><i class="bi bi-x-circle-fill"></i></small>
-                        </a>
-                        {% endif %}
+                        <div class="salary-row">
+                            <span>OT 1.5 (ชม.)</span> 
+                            <div class="d-flex gap-2">
+                                <input type="text" id="ot_15_hr" class="salary-input" style="width:50px; background:#e3f2fd;" placeholder="hr" onblur="calcSalary()" value="{{ salary_preset.get('ot_15_hr', 0) }}">
+                                <span id="ot_15_amt" class="fw-bold text-primary">0.00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2 mt-3 fw-bold text-danger text-decoration-underline">3. รายหัก (Deduct)</div>
+                        <div class="salary-row"><span>ประกันสังคม</span> <input type="text" id="d_sso" class="salary-input" onblur="calcSalary()" value="{{ salary_preset.get('d_sso', 750) }}"></div>
+                        <div class="salary-row"><span>สาย/ลา/ภาษี</span> <input type="text" id="d_tax" class="salary-input" onblur="calcSalary()" value="{{ salary_preset.get('d_tax', 0) }}"></div>
+
+                        <hr class="border-dark border-2 border-dashed">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold m-0">รับสุทธิ (Net Pay)</h4>
+                            <h2 class="fw-bold text-purple m-0" id="net_pay_display">0.00</h2>
+                        </div>
+
+                        <form action="/add" method="POST" id="salaryForm">
+                            <input type="hidden" name="type" value="income">
+                            <input type="hidden" name="category" value="เงินเดือน">
+                            <input type="hidden" name="note" value="เงินเดือนสุทธิ">
+                            <input type="hidden" name="amount" id="final_salary_amount">
+                            <button type="button" onclick="submitSalary()" class="btn btn-dark w-100 py-2"><i class="bi bi-cash-stack"></i> บันทึกเป็นรายรับเดือนนี้</button>
+                        </form>
                     </div>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
+
+            <div class="tab-pane fade" id="content-saving">
+                <div class="d-grid mb-3">
+                    <button class="btn btn-outline-dark border-2 fw-bold border-dashed" data-bs-toggle="collapse" data-bs-target="#addGoalForm">
+                        <i class="bi bi-plus-lg"></i> สร้างเป้าหมายใหม่
+                    </button>
+                </div>
+                
+                <div class="collapse mb-3" id="addGoalForm">
+                    <div class="k-card p-3">
+                        <form action="/add_saving_goal" method="POST">
+                            <input type="text" name="name" class="form-control border-dark mb-2" placeholder="อยากได้อะไร? (เช่น PS5)" required>
+                            <input type="number" name="target" class="form-control border-dark mb-2" placeholder="ราคาเป้าหมาย (บาท)" required>
+                            <button type="submit" class="btn btn-primary w-100">สร้างกระปุก</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% for goal in savings %}
+                <div class="k-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold m-0"><i class="bi {{ goal.icon }}"></i> {{ goal.name }}</h5>
+                        <small class="text-muted">{{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }}</small>
+                    </div>
+                    
+                    {% set pct = (goal.current / goal.target * 100) | round(1) %}
+                    <div class="progress-container mb-3">
+                        <div class="progress-bar-custom" style="width: {{ pct }}%;">
+                            {% if pct > 5 %} {{ pct }}% {% endif %}
+                        </div>
+                    </div>
+
+                    <form action="/update_saving" method="POST" class="d-flex gap-2">
+                        <input type="hidden" name="goal_id" value="{{ goal.id }}">
+                        <input type="number" name="amount" class="form-control border-dark form-control-sm" placeholder="เติมเงิน..." required>
+                        <button type="submit" class="btn btn-sm btn-dark text-nowrap"><i class="bi bi-coin"></i> หยอดกระปุก</button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="text-center py-5 opacity-50">
+                    <i class="bi bi-emoji-dizzy fs-1"></i>
+                    <p>ยังไม่มีเป้าหมายเลย เก็บเงินกันเถอะ!</p>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div> </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Data from Flask
-        const chartLabels = JSON.parse('{{ chart_labels | safe }}');
-        const chartData = JSON.parse('{{ chart_data | safe }}');
-        const userWage = parseFloat('{{ settings.hourly_wage }}');
-
-        // Chart Logic
-        if (chartData.length > 0) {
-            const ctx = document.getElementById('expenseChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        data: chartData,
-                        backgroundColor: ['#9c27b0', '#e91e63', '#2c2c2c', '#ba68c8', '#f06292'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'right' } }
-                }
-            });
-        }
-
-        // Toggle Categories
-        const expenseCats = ["ของกิน", "เดินทาง", "ของสะสม", "เติมเกม", "อื่นๆ"];
-        const incomeCats = ["เงินเดือน", "ค่าขนม", "รับจ้าง", "อื่นๆ"];
-
+        // --- 1. GENERAL & CATEGORY ---
+        const cats = {
+            expense: ["ของกิน", "เดินทาง", "ช้อปปิ้ง", "บิล", "อื่นๆ"],
+            income: ["เงินเดือน", "โบนัส", "ขายของ", "อื่นๆ"]
+        };
         function toggleCategories() {
             const type = document.getElementById("typeSelect").value;
-            const catSelect = document.getElementById("categorySelect");
-            catSelect.innerHTML = "";
-            
-            const cats = type === "expense" ? expenseCats : incomeCats;
-            cats.forEach(c => {
-                const opt = document.createElement("option");
-                opt.value = c;
-                opt.innerText = c;
-                catSelect.appendChild(opt);
+            const sel = document.getElementById("categorySelect");
+            sel.innerHTML = "";
+            cats[type].forEach(c => {
+                let opt = document.createElement("option");
+                opt.innerText = c; opt.value = c; sel.appendChild(opt);
             });
         }
+        toggleCategories();
 
-        // Calculate Work Time Logic
-        function calculateTime() {
-            const amount = parseFloat(document.getElementById("amountInput").value);
-            const resultDiv = document.getElementById("timeCostResult");
-            const resultText = document.getElementById("timeCostText");
-            const type = document.getElementById("typeSelect").value;
+        // --- 2. SALARY CALC LOGIC (Ported & Simplified) ---
+        function safeEval(str) {
+            try { return new Function('return ' + str)() || 0; } catch { return 0; }
+        }
+        function getVal(id) {
+            let el = document.getElementById(id);
+            // ถ้าเป็นสูตรคณิต ให้คำนวณและแสดงผลลัพธ์กลับไปในช่อง
+            let valStr = el.value;
+            if(/[+\-*/]/.test(valStr)) {
+                let res = safeEval(valStr);
+                el.value = res; // Update UI
+                return res;
+            }
+            return parseFloat(valStr) || 0;
+        }
+        
+        function calcSalary() {
+            let base = getVal('s_base');
+            let other = getVal('s_other');
+            
+            // OT Base (Base / 30 / 8)
+            let otBaseVal = base / 30 / 8;
+            document.getElementById('ot_base_display').innerText = "{:,.0f}".replace("{}", base);
+            document.getElementById('ot_rate_display').innerText = otBaseVal.toFixed(2);
 
-            // แสดงเฉพาะรายจ่าย และเมื่อมีการตั้งค่าแรงไว้
-            if (type === 'expense' && amount > 0 && userWage > 0) {
-                const hours = Math.floor(amount / userWage);
-                const minutes = Math.round(((amount / userWage) - hours) * 60);
-                
-                let text = "";
-                if (hours > 0) text += `${hours} ชั่วโมง `;
-                if (minutes > 0) text += `${minutes} นาที`;
-                if (text === "") text = "น้อยกว่า 1 นาที";
+            // OT Calc
+            let ot15_hr = getVal('ot_15_hr');
+            let ot15_amt = otBaseVal * 1.5 * ot15_hr;
+            document.getElementById('ot_15_amt').innerText = ot15_amt.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
 
-                resultText.innerText = text;
-                resultDiv.classList.remove("d-none");
-            } else {
-                resultDiv.classList.add("d-none");
+            // Deduct
+            let sso = getVal('d_sso');
+            let tax = getVal('d_tax');
+
+            // Net
+            let totalIncome = base + other + ot15_amt;
+            let totalDeduct = sso + tax;
+            let net = totalIncome - totalDeduct;
+
+            document.getElementById('net_pay_display').innerText = net.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('final_salary_amount').value = net;
+        }
+
+        function submitSalary() {
+            calcSalary(); // Ensure latest val
+            if(confirm("ยืนยันบันทึกยอดเงินเดือนนี้เข้า Dashboard?")) {
+                document.getElementById('salaryForm').submit();
             }
         }
 
-        // Run on init
-        toggleCategories();
-        
-        // Listen to type change to hide calculator if income
-        document.getElementById("typeSelect").addEventListener("change", calculateTime);
+        function savePreset() {
+            const data = {
+                s_base: document.getElementById('s_base').value,
+                s_other: document.getElementById('s_other').value,
+                ot_15_hr: document.getElementById('ot_15_hr').value,
+                d_sso: document.getElementById('d_sso').value,
+                d_tax: document.getElementById('d_tax').value
+            };
+            
+            fetch('/save_salary_preset', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            }).then(res => {
+                alert("จำค่าเรียบร้อย! เดือนหน้าเปิดมาค่าเดิมมาเลย");
+            });
+        }
+
+        // Run calc on load
+        calcSalary();
 
     </script>
 </body>
