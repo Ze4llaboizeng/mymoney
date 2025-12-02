@@ -41,6 +41,23 @@
         .piggy-jar::before { left: 20px; transform: rotate(-20deg); }
         .piggy-jar::after { right: 20px; transform: rotate(20deg); }
         
+        /* Delete Button on Piggy Jar */
+        .piggy-delete {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: white;
+            border: 2px solid #880e4f;
+            color: #880e4f;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .piggy-delete:hover { background: #880e4f; color: white; }
+
         .piggy-nose {
             width: 60px; height: 35px; background: #f48fb1; border: 2px solid #880e4f;
             border-radius: 50%; margin: 0 auto 10px auto; display: flex; justify-content: center; align-items: center; gap: 10px;
@@ -54,7 +71,7 @@
             height: 100%; background: repeating-linear-gradient(45deg, #e91e63, #e91e63 10px, #ff4081 10px, #ff4081 20px);
         }
 
-        /* === RETRO RECEIPT STYLE === */
+        /* === RETRO & OTHER STYLES (Keep Same) === */
         .retro-wrapper { font-family: 'Chakra Petch', sans-serif; color: #2b2b2b; }
         .receipt-paper {
             background-color: #f6f6f6;
@@ -83,16 +100,8 @@
         .hrs-input { width: 40px; text-align: center; background: #ddd; }
         .amt-text { font-family: 'VT323', monospace; font-size: 1.3rem; min-width: 70px; text-align: right; display: inline-block; }
 
-        /* === MINI RECEIPT MODAL === */
-        #miniReceiptNode {
-            width: 300px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border: 1px dashed #333;
-            text-align: center;
-            font-family: 'VT323', monospace;
-        }
+        /* Receipt Modal */
+        #miniReceiptNode { width: 300px; margin: 0 auto; background: #fff; padding: 20px; border: 1px dashed #333; text-align: center; font-family: 'VT323', monospace; }
     </style>
 </head>
 <body>
@@ -100,7 +109,7 @@
         
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold m-0"><i class="bi bi-skull-fill"></i> Kuromi Pro</h4>
-            <span class="badge bg-dark">Capture Ready 📸</span>
+            <span class="badge bg-dark">v2.0</span>
         </div>
 
         <ul class="nav nav-pills nav-fill mb-4" id="pills-tab" role="tablist">
@@ -138,7 +147,7 @@
                     </form>
                 </div>
 
-                <h6 class="fw-bold ms-2">ล่าสุด (กด 🧾 เพื่อดูสลิป)</h6>
+                <h6 class="fw-bold ms-2">ล่าสุด</h6>
                 {% for t in transactions %}
                 <div class="k-card p-2 px-3 d-flex justify-content-between align-items-center mb-2">
                     <div>
@@ -149,10 +158,7 @@
                         <span class="{{ 'text-success' if t.type == 'income' else 'text-danger' }} fw-bold">
                             {{ '+' if t.type == 'income' else '-' }}{{ "{:,.2f}".format(t.amount) }}
                         </span>
-                        <button class="btn btn-sm btn-outline-dark border-0" 
-                                onclick='showReceipt("{{ t.note }}", "{{ t.amount }}", "{{ t.date }}", "{{ t.type }}")'>
-                            🧾
-                        </button>
+                        <button class="btn btn-sm btn-outline-dark border-0" onclick='showReceipt("{{ t.note }}", "{{ t.amount }}", "{{ t.date }}", "{{ t.type }}")'>🧾</button>
                         <a href="/delete/{{ t.id }}" class="text-secondary" onclick="return confirm('ลบ?')"><i class="bi bi-x-circle"></i></a>
                     </div>
                 </div>
@@ -162,12 +168,11 @@
             <div class="tab-pane fade retro-wrapper" id="content-salary">
                 <div class="d-flex justify-content-center gap-2 mb-2">
                     <button class="btn btn-sm btn-dark rounded-pill px-3" onclick="savePreset()"><i class="bi bi-save-fill"></i> จำค่า</button>
-                    <button class="btn btn-sm btn-warning rounded-pill px-3" onclick="capture('salary-slip-node', 'MySalarySlip')"><i class="bi bi-camera-fill"></i> บันทึกภาพสลิป</button>
+                    <button class="btn btn-sm btn-warning rounded-pill px-3" onclick="capture('salary-slip-node', 'MySalarySlip')"><i class="bi bi-camera-fill"></i> บันทึกภาพ</button>
                 </div>
                 
                 <div class="receipt-paper" id="salary-slip-node">
                     <div class="jagged-top"></div>
-                    
                     <div class="text-center">
                         <div class="retro-brand">PAYROLL SLIP</div>
                         <div class="small opacity-50 mb-3">MONTHLY / 2025</div>
@@ -263,6 +268,10 @@
                 {% for goal in savings %}
                 <div class="position-relative">
                     <div class="piggy-jar" id="piggy-{{ goal.id }}">
+                        <a href="/delete_saving/{{ goal.id }}" class="piggy-delete" onclick="return confirm('จะทุบกระปุกทิ้งเลยหรอ? (เงินเก็บหายนะ!)')">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+
                         <div class="piggy-nose">
                             <div class="nostril"></div><div class="nostril"></div>
                         </div>
@@ -286,8 +295,15 @@
                         </button>
                         <form action="/update_saving" method="POST" class="d-flex gap-2">
                             <input type="hidden" name="goal_id" value="{{ goal.id }}">
-                            <input type="number" name="amount" class="form-control border-danger text-danger fw-bold form-control-sm" style="width: 80px;" placeholder="หยอด" required>
-                            <button type="submit" class="btn btn-sm btn-danger rounded-circle"><i class="bi bi-coin"></i></button>
+                            <input type="number" name="amount" class="form-control border-danger text-danger fw-bold form-control-sm" style="width: 100px;" placeholder="จำนวนเงิน" required>
+                            
+                            <button type="submit" name="action" value="deposit" class="btn btn-sm btn-danger rounded-circle" title="หยอดกระปุก">
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                            
+                            <button type="submit" name="action" value="withdraw" class="btn btn-sm btn-outline-danger rounded-circle border-2" title="แคะกระปุก" onclick="return confirm('จะแคะเงินออกมาใช้จริงหรอ?')">
+                                <i class="bi bi-hammer"></i>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -299,7 +315,8 @@
                 {% endfor %}
             </div>
 
-        </div> </div>
+        </div> 
+    </div>
 
     <div class="modal fade" id="receiptModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -343,24 +360,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // === 1. CAPTURE LOGIC ===
+        // JS Functions (Same as before)
         function capture(id, filename) {
             const node = document.getElementById(id);
-            // เทคนิค: ถ้าแคปสลิป Retro ให้เปลี่ยนพื้นหลังเป็นสีขาวชั่วคราวเพื่อให้ชัด
-            const originalBg = node.style.background;
-            
-            html2canvas(node, {
-                scale: 2, // ชัดระดับ Retina
-                backgroundColor: null, // โปร่งใสหรือตาม CSS
-            }).then(canvas => {
+            html2canvas(node, { scale: 2, backgroundColor: null }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = filename + '_' + Date.now() + '.png';
                 link.href = canvas.toDataURL();
                 link.click();
-            }).catch(err => alert("เกิดข้อผิดพลาดในการบันทึกภาพ: " + err));
+            });
         }
-
-        // === 2. MINI RECEIPT LOGIC ===
+        
         const receiptModal = new bootstrap.Modal(document.getElementById('receiptModal'));
         function showReceipt(note, amount, date, type) {
             document.getElementById('r_note').innerText = note;
@@ -368,20 +378,11 @@
             document.getElementById('r_total').innerText = parseFloat(amount).toFixed(2);
             document.getElementById('r_date').innerText = date;
             document.getElementById('r_type').innerText = type.toUpperCase();
-            
-            // เปลี่ยนสีตัวอักษรตามประเภท
-            const amtEl = document.getElementById('r_amount');
-            if(type === 'income') amtEl.style.color = 'green';
-            else amtEl.style.color = 'red';
-
+            document.getElementById('r_amount').style.color = type === 'income' ? 'green' : 'red';
             receiptModal.show();
         }
 
-        // === 3. GENERAL LOGIC ===
-        const cats = {
-            expense: ["ของกิน", "เดินทาง", "ช้อปปิ้ง", "บิล", "อื่นๆ"],
-            income: ["เงินเดือน", "โบนัส", "ขายของ", "อื่นๆ"]
-        };
+        const cats = { expense: ["ของกิน", "เดินทาง", "ช้อปปิ้ง", "บิล", "อื่นๆ"], income: ["เงินเดือน", "โบนัส", "ขายของ", "อื่นๆ"] };
         function toggleCategories() {
             const type = document.getElementById("typeSelect").value;
             const sel = document.getElementById("categorySelect");
@@ -393,84 +394,41 @@
         }
         toggleCategories();
 
-        // === 4. SALARY CALC LOGIC ===
-        function safeEval(str) {
-            try { return new Function('return ' + str)() || 0; } catch { return 0; }
-        }
+        function safeEval(str) { try { return new Function('return ' + str)() || 0; } catch { return 0; } }
         function getVal(id) {
-            let el = document.getElementById(id);
-            if(!el) return 0;
+            let el = document.getElementById(id); if(!el) return 0;
             let valStr = el.value;
-            if(/[+\-*/]/.test(valStr)) {
-                let res = safeEval(valStr);
-                el.value = res;
-                return res;
-            }
+            if(/[+\-*/]/.test(valStr)) { let res = safeEval(valStr); el.value = res; return res; }
             return parseFloat(valStr) || 0;
         }
-        function setTxt(id, val) {
-            document.getElementById(id).innerText = val.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
-        }
+        function setTxt(id, val) { document.getElementById(id).innerText = val.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}); }
 
         function calcSalary() {
-            let salary = getVal('s_salary');
-            let col = getVal('s_col');
-            let level = getVal('s_level');
-            let diligence = getVal('s_diligence');
-            let food = getVal('s_food');
-            let other = getVal('s_other');
-
+            let salary = getVal('s_salary'); let col = getVal('s_col'); let level = getVal('s_level');
+            let diligence = getVal('s_diligence'); let food = getVal('s_food'); let other = getVal('s_other');
             let baseForOt = salary + col + level;
-            let rate = 0;
-            if (baseForOt > 0) rate = (baseForOt / 30) / 8;
+            let rate = baseForOt > 0 ? (baseForOt / 30) / 8 : 0;
             setTxt('ot_rate_display', rate);
-
-            let h15 = getVal('ot_15_hr');
-            let h13 = getVal('ot_13_hr');
-            let h30 = getVal('ot_30_hr');
-
-            let amt15 = rate * 1.5 * h15;
-            let amt13 = rate * 1.3 * h13;
-            let amt30 = rate * 3.0 * h30;
-
-            setTxt('ot_15_amt', amt15);
-            setTxt('ot_13_amt', amt13);
-            setTxt('ot_30_amt', amt30);
-
-            let totalOtHrs = h15 + h13 + h30;
-            let otFoodAmt = totalOtHrs * 20;
-            setTxt('ot_food_amt', otFoodAmt);
-
+            
+            let h15 = getVal('ot_15_hr'); let h13 = getVal('ot_13_hr'); let h30 = getVal('ot_30_hr');
+            let amt15 = rate * 1.5 * h15; let amt13 = rate * 1.3 * h13; let amt30 = rate * 3.0 * h30;
+            setTxt('ot_15_amt', amt15); setTxt('ot_13_amt', amt13); setTxt('ot_30_amt', amt30);
+            
+            let otFoodAmt = (h15 + h13 + h30) * 20; setTxt('ot_food_amt', otFoodAmt);
             let gross = baseForOt + diligence + food + other + amt15 + amt13 + amt30 + otFoodAmt;
             setTxt('gross_income', gross);
-
-            let tax = getVal('d_tax');
-            let sso = getVal('d_sso');
-            let fund = getVal('d_fund');
-            let totalDeduct = tax + sso + fund;
-
+            
+            let totalDeduct = getVal('d_tax') + getVal('d_sso') + getVal('d_fund');
             let net = gross - totalDeduct;
             setTxt('net_pay_display', net);
             document.getElementById('final_salary_amount').value = net;
         }
-
-        function submitSalary() {
-            calcSalary();
-            if(confirm("ยืนยันการบันทึกยอดเงินเดือนนี้?")) {
-                document.getElementById('salaryForm').submit();
-            }
-        }
-
+        function submitSalary() { calcSalary(); if(confirm("ยืนยันการบันทึกยอดเงินเดือน?")) document.getElementById('salaryForm').submit(); }
         function savePreset() {
-            const preset = {};
-            document.querySelectorAll('.retro-input').forEach(input => preset[input.id] = input.value);
-            fetch('/save_salary_preset', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(preset)
-            }).then(() => alert("จำค่าเรียบร้อย!"));
+            const preset = {}; document.querySelectorAll('.retro-input').forEach(input => preset[input.id] = input.value);
+            fetch('/save_salary_preset', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(preset) })
+            .then(() => alert("จำค่าเรียบร้อย!"));
         }
-
         calcSalary();
     </script>
 </body>
