@@ -10,8 +10,13 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <style>
-        /* === THEME === */
-        :root { --k-bg: #f3e5f5; --k-dark: #212121; --k-purple: #9c27b0; --k-pink: #e91e63; }
+        /* === MAIN THEME (Kuromi) === */
+        :root {
+            --k-bg: #f3e5f5;
+            --k-dark: #212121;
+            --k-purple: #9c27b0;
+            --k-pink: #e91e63;
+        }
         body { background-color: var(--k-bg); font-family: 'Kanit', sans-serif; padding-bottom: 80px; }
         
         .nav-pills .nav-link { color: var(--k-dark); background: white; border: 2px solid var(--k-dark); margin: 0 4px; border-radius: 50px; }
@@ -19,45 +24,83 @@
 
         .k-card { background: white; border: 2px solid var(--k-dark); border-radius: 18px; box-shadow: 4px 4px 0px rgba(0,0,0,0.8); margin-bottom: 15px; }
 
-        /* === PIGGY BANK === */
+        /* === PIGGY BANK UI === */
         .piggy-jar {
-            background: #f8bbd0; border: 3px solid #880e4f; border-radius: 40px; padding: 20px; position: relative; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(233, 30, 99, 0.2);
+            background: #f8bbd0;
+            border: 3px solid #880e4f;
+            border-radius: 40px;
+            padding: 20px;
+            position: relative;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.2);
         }
         .piggy-jar::before, .piggy-jar::after {
-            content: ''; position: absolute; top: -15px; width: 40px; height: 40px; background: #f8bbd0; border: 3px solid #880e4f; border-radius: 10px; z-index: -1;
+            content: ''; position: absolute; top: -15px; width: 40px; height: 40px;
+            background: #f8bbd0; border: 3px solid #880e4f; border-radius: 10px; z-index: -1;
         }
         .piggy-jar::before { left: 20px; transform: rotate(-20deg); }
         .piggy-jar::after { right: 20px; transform: rotate(20deg); }
+        
+        /* Delete Button on Piggy Jar */
         .piggy-delete {
-            position: absolute; top: 10px; right: 15px; background: white; border: 2px solid #880e4f; color: #880e4f; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: white;
+            border: 2px solid #880e4f;
+            color: #880e4f;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            z-index: 10;
         }
+        .piggy-delete:hover { background: #880e4f; color: white; }
+
         .piggy-nose {
-            width: 60px; height: 35px; background: #f48fb1; border: 2px solid #880e4f; border-radius: 50%; margin: 0 auto 10px auto; display: flex; justify-content: center; align-items: center; gap: 10px;
+            width: 60px; height: 35px; background: #f48fb1; border: 2px solid #880e4f;
+            border-radius: 50%; margin: 0 auto 10px auto; display: flex; justify-content: center; align-items: center; gap: 10px;
         }
         .nostril { width: 8px; height: 12px; background: #880e4f; border-radius: 50%; }
-        .piggy-progress { height: 25px; background: white; border: 2px solid #880e4f; border-radius: 15px; overflow: hidden; }
-        .piggy-fill { height: 100%; background: repeating-linear-gradient(45deg, #e91e63, #e91e63 10px, #ff4081 10px, #ff4081 20px); }
 
-        /* === RETRO STYLE === */
+        .piggy-progress {
+            height: 25px; background: white; border: 2px solid #880e4f; border-radius: 15px; overflow: hidden;
+        }
+        .piggy-fill {
+            height: 100%; background: repeating-linear-gradient(45deg, #e91e63, #e91e63 10px, #ff4081 10px, #ff4081 20px);
+        }
+
+        /* === RETRO & OTHER STYLES (Keep Same) === */
         .retro-wrapper { font-family: 'Chakra Petch', sans-serif; color: #2b2b2b; }
         .receipt-paper {
-            background-color: #f6f6f6; padding: 25px 20px; position: relative;
+            background-color: #f6f6f6;
+            padding: 25px 20px;
+            position: relative;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-top: 10px;
         }
-        .jagged-top { position: absolute; top: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(135deg, transparent 33%, #f6f6f6 33%, #f6f6f6 66%, transparent 66%) -5px 0 / 10px 100% repeat-x; transform: rotate(180deg); }
-        .jagged-bottom { position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px; background: linear-gradient(135deg, transparent 33%, #f6f6f6 33%, #f6f6f6 66%, transparent 66%) -5px 0 / 10px 100% repeat-x; }
-        .retro-input { font-family: 'VT323', monospace; font-size: 1.3rem; border: none; border-bottom: 1px dotted #888; background: transparent; text-align: right; width: 90px; color: #2b2b2b; }
+        .jagged-top {
+            position: absolute; top: -10px; left: 0; width: 100%; height: 10px;
+            background: linear-gradient(135deg, transparent 33%, #f6f6f6 33%, #f6f6f6 66%, transparent 66%) -5px 0 / 10px 100% repeat-x;
+            transform: rotate(180deg);
+        }
+        .jagged-bottom {
+            position: absolute; bottom: -10px; left: 0; width: 100%; height: 10px;
+            background: linear-gradient(135deg, transparent 33%, #f6f6f6 33%, #f6f6f6 66%, transparent 66%) -5px 0 / 10px 100% repeat-x;
+        }
+        .retro-input {
+            font-family: 'VT323', monospace; font-size: 1.3rem; border: none; border-bottom: 1px dotted #888;
+            background: transparent; text-align: right; width: 90px; color: #2b2b2b;
+        }
         .vt-font { font-family: 'VT323', monospace; font-size: 1.4rem; }
         .retro-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; line-height: 1.4; }
         .retro-brand { font-family: 'VT323', monospace; font-size: 2rem; border-bottom: 2px solid black; display: inline-block; margin-bottom: 10px; }
         .hrs-input { width: 40px; text-align: center; background: #ddd; }
         .amt-text { font-family: 'VT323', monospace; font-size: 1.3rem; min-width: 70px; text-align: right; display: inline-block; }
 
-        /* === WORTH IT CALCULATOR MODAL === */
-        .worth-modal-content { border: 3px solid var(--k-dark); border-radius: 20px; box-shadow: 8px 8px 0px rgba(0,0,0,0.2); }
-        .worth-result-box { background: #f3e5f5; border: 2px dashed var(--k-purple); border-radius: 15px; padding: 15px; text-align: center; margin-top: 15px; display: none; }
-        
+        /* Receipt Modal */
         #miniReceiptNode { width: 300px; margin: 0 auto; background: #fff; padding: 20px; border: 1px dashed #333; text-align: center; font-family: 'VT323', monospace; }
     </style>
 </head>
@@ -66,7 +109,7 @@
         
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold m-0"><i class="bi bi-skull-fill"></i> Kuromi Pro</h4>
-            <span class="badge bg-dark">v3.0 Worth It</span>
+            <span class="badge bg-dark">v2.0</span>
         </div>
 
         <ul class="nav nav-pills nav-fill mb-4" id="pills-tab" role="tablist">
@@ -78,13 +121,9 @@
         <div class="tab-content">
             
             <div class="tab-pane fade show active" id="content-dash">
-                <div class="k-card text-center p-4 text-white position-relative" style="background: linear-gradient(135deg, #212121 0%, #4a148c 100%); border: none;">
+                <div class="k-card text-center p-4 text-white" style="background: linear-gradient(135deg, #212121 0%, #4a148c 100%); border: none;">
                     <small>คงเหลือสุทธิ</small>
                     <h1 class="display-3 fw-bold mb-0">฿{{ "{:,.2f}".format(balance) }}</h1>
-                    
-                    <button class="btn btn-light text-dark fw-bold rounded-pill position-absolute bottom-0 end-0 m-3 shadow-sm" style="font-size: 0.8rem;" data-bs-toggle="modal" data-bs-target="#worthItModal">
-                        <i class="bi bi-calculator"></i> 🔮 เช็คความคุ้ม
-                    </button>
                 </div>
 
                 <div class="k-card p-3">
@@ -138,35 +177,61 @@
                         <div class="retro-brand">PAYROLL SLIP</div>
                         <div class="small opacity-50 mb-3">MONTHLY / 2025</div>
                     </div>
+
                     <div class="fw-bold text-decoration-underline mb-2">1. รายได้ (INCOME)</div>
                     <div class="retro-row"><span>เงินเดือน (Base)</span> <input type="text" id="s_salary" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_salary', '') }}"></div>
-                    <div class="retro-row"><span>ค่าครองชีพ</span> <input type="text" id="s_col" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_col', '') }}"></div>
+                    <div class="retro-row"><span>ค่าครองชีพ (COL)</span> <input type="text" id="s_col" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_col', '') }}"></div>
+                    <div class="retro-row"><span>ค่าตำแหน่ง (Level)</span> <input type="text" id="s_level" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_level', '') }}"></div>
+                    <div class="retro-row"><span>เบี้ยขยัน</span> <input type="text" id="s_diligence" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_diligence', '') }}"></div>
+                    <div class="retro-row"><span>ค่าอาหาร</span> <input type="text" id="s_food" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_food', '') }}"></div>
                     <div class="retro-row"><span>อื่นๆ</span> <input type="text" id="s_other" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_other', '') }}"></div>
-                    <input type="hidden" id="s_level" value="{{ salary_preset.get('s_level', '') }}">
-                    <input type="hidden" id="s_diligence" value="{{ salary_preset.get('s_diligence', '') }}">
-                    <input type="hidden" id="s_food" value="{{ salary_preset.get('s_food', '') }}">
 
-                    <div class="fw-bold text-decoration-underline mb-2 mt-3">2. โอที (OT)</div>
-                    <div class="text-end small opacity-50 mb-1">Rate: <span id="ot_rate_display">0.00</span></div>
-                    <div class="retro-row"><span>OT รวม (ชม.)</span> 
+                    <div class="fw-bold text-decoration-underline mb-2 mt-3">2. ล่วงเวลา (OVERTIME)</div>
+                    <div class="text-end small opacity-50 mb-1">Rate: <span id="ot_rate_display">0.00</span> B/Hr</div>
+                    
+                    <div class="retro-row">
+                        <span>OT x1.5 (ชม.)</span>
                         <div class="d-flex align-items-center">
-                            <input type="text" id="ot_total_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_total_hr', '') }}">
-                            <span class="amt-text" id="ot_amt">0.00</span>
+                            <input type="text" id="ot_15_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_15_hr', '') }}">
+                            <span class="amt-text" id="ot_15_amt">0.00</span>
                         </div>
+                    </div>
+                    <div class="retro-row">
+                        <span>OT x1.3 (ชม.)</span>
+                        <div class="d-flex align-items-center">
+                            <input type="text" id="ot_13_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_13_hr', '') }}">
+                            <span class="amt-text" id="ot_13_amt">0.00</span>
+                        </div>
+                    </div>
+                    <div class="retro-row">
+                        <span>OT x3.0 (ชม.)</span>
+                        <div class="d-flex align-items-center">
+                            <input type="text" id="ot_30_hr" class="retro-input hrs-input me-2" placeholder="0" onblur="calcSalary()" value="{{ salary_preset.get('ot_30_hr', '') }}">
+                            <span class="amt-text" id="ot_30_amt">0.00</span>
+                        </div>
+                    </div>
+                    <div class="retro-row">
+                        <span>ค่าอาหาร OT</span>
+                        <span class="amt-text" id="ot_food_amt">0.00</span>
                     </div>
 
                     <div class="retro-row fw-bold mt-2 pt-1 border-top border-dark border-dashed">
-                        <span>รวมรายได้</span> <span class="amt-text" id="gross_income">0.00</span>
+                        <span>รวมรายได้ (GROSS)</span>
+                        <span class="amt-text" id="gross_income">0.00</span>
                     </div>
 
-                    <div class="fw-bold text-decoration-underline mb-2 mt-3">3. หัก (DEDUCT)</div>
-                    <div class="retro-row"><span>รวมหัก</span> <input type="text" id="d_total" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_total', '') }}"></div>
+                    <div class="fw-bold text-decoration-underline mb-2 mt-3">3. รายการหัก (DEDUCT)</div>
+                    <div class="retro-row"><span>ภาษี (Tax)</span> <input type="text" id="d_tax" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_tax', '') }}"></div>
+                    <div class="retro-row"><span>ประกันสังคม (SSO)</span> <input type="text" id="d_sso" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_sso', '') }}"></div>
+                    <div class="retro-row"><span>กองทุน/สหกรณ์</span> <input type="text" id="d_fund" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_fund', '') }}"></div>
 
                     <div style="border-bottom: 3px double black; margin: 15px 0;"></div>
+
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold fs-5">NET PAY</span>
                         <span class="vt-font fw-bold fs-1" id="net_pay_display">0.00</span>
                     </div>
+
                     <div class="jagged-bottom"></div>
                 </div>
 
@@ -193,7 +258,7 @@
                 <div class="collapse mb-3" id="addGoalForm">
                     <div class="k-card p-3">
                         <form action="/add_saving_goal" method="POST">
-                            <input type="text" name="name" class="form-control border-dark mb-2" placeholder="ชื่อกระปุก" required>
+                            <input type="text" name="name" class="form-control border-dark mb-2" placeholder="ชื่อกระปุก (เช่น iPad)" required>
                             <input type="number" name="target" class="form-control border-dark mb-2" placeholder="เป้าหมาย (บาท)" required>
                             <button type="submit" class="btn btn-danger w-100">สร้างเลย</button>
                         </form>
@@ -203,164 +268,168 @@
                 {% for goal in savings %}
                 <div class="position-relative">
                     <div class="piggy-jar" id="piggy-{{ goal.id }}">
-                        <a href="/delete_saving/{{ goal.id }}" class="piggy-delete" onclick="return confirm('จะทุบกระปุกทิ้งเลยหรอ?')"><i class="bi bi-trash-fill"></i></a>
-                        <div class="piggy-nose"><div class="nostril"></div><div class="nostril"></div></div>
+                        <a href="/delete_saving/{{ goal.id }}" class="piggy-delete" onclick="return confirm('จะทุบกระปุกทิ้งเลยหรอ? (เงินเก็บหายนะ!)')">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+
+                        <div class="piggy-nose">
+                            <div class="nostril"></div><div class="nostril"></div>
+                        </div>
+                        
                         <div class="text-center mb-2">
                             <h5 class="fw-bold m-0" style="color: #880e4f;">{{ goal.name }}</h5>
                             <small class="text-muted">{{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }} บาท</small>
                         </div>
+                        
                         {% set pct = (goal.current / goal.target * 100) | round(1) %}
-                        <div class="piggy-progress mb-3"><div class="piggy-fill" style="width: {{ pct }}%;"></div></div>
+                        <div class="piggy-progress mb-3">
+                            <div class="piggy-fill" style="width: {{ pct }}%;"></div>
+                        </div>
+                        
+                        <div class="text-center opacity-25" style="font-size:0.7rem;">Kuromi Money Savings</div>
                     </div>
+                    
                     <div class="d-flex justify-content-between align-items-center px-2 mb-4">
-                        <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="capture('piggy-{{ goal.id }}', 'Saving_{{ goal.name }}')"><i class="bi bi-camera-fill"></i> เซฟรูป</button>
+                        <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="capture('piggy-{{ goal.id }}', 'Saving_{{ goal.name }}')">
+                            <i class="bi bi-camera-fill"></i> เซฟรูป
+                        </button>
                         <form action="/update_saving" method="POST" class="d-flex gap-2">
                             <input type="hidden" name="goal_id" value="{{ goal.id }}">
-                            <input type="number" name="amount" class="form-control border-danger text-danger fw-bold form-control-sm" style="width: 100px;" placeholder="จำนวน" required>
-                            <button type="submit" name="action" value="deposit" class="btn btn-sm btn-danger rounded-circle"><i class="bi bi-arrow-down"></i></button>
-                            <button type="submit" name="action" value="withdraw" class="btn btn-sm btn-outline-danger rounded-circle border-2" onclick="return confirm('จะแคะเงินออกมาใช้จริงหรอ?')"><i class="bi bi-hammer"></i></button>
+                            <input type="number" name="amount" class="form-control border-danger text-danger fw-bold form-control-sm" style="width: 100px;" placeholder="จำนวนเงิน" required>
+                            
+                            <button type="submit" name="action" value="deposit" class="btn btn-sm btn-danger rounded-circle" title="หยอดกระปุก">
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                            
+                            <button type="submit" name="action" value="withdraw" class="btn btn-sm btn-outline-danger rounded-circle border-2" title="แคะกระปุก" onclick="return confirm('จะแคะเงินออกมาใช้จริงหรอ?')">
+                                <i class="bi bi-hammer"></i>
+                            </button>
                         </form>
                     </div>
                 </div>
                 {% else %}
-                <div class="text-center py-5 text-muted"><i class="bi bi-piggy-bank fs-1"></i><p>ยังไม่มีกระปุกออมสิน</p></div>
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-piggy-bank fs-1"></i>
+                    <p>ยังไม่มีกระปุกออมสิน</p>
+                </div>
                 {% endfor %}
             </div>
 
         </div> 
     </div>
 
-    <div class="modal fade" id="worthItModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content worth-modal-content">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title">🔮 Kuromi วัดความคุ้ม</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="small text-muted">ค่าแรงต่อชั่วโมง (บาท/ชม.)</label>
-                        <input type="number" id="w_wage" class="form-control border-dark" value="{{ settings.hourly_wage }}" placeholder="เช่น 50">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="fw-bold">ของชิ้นนี้ราคาเท่าไหร่?</label>
-                        <input type="number" id="w_price" class="form-control border-dark form-control-lg fw-bold" placeholder="0.00" oninput="calculateWorth()">
-                    </div>
-
-                    <div id="worthResult" class="worth-result-box">
-                        <h1 class="display-6 fw-bold mb-0" id="w_time">0 ชม.</h1>
-                        <small class="text-muted">คือเวลาที่ต้องทำงานแลกมา</small>
-                        
-                        <div id="monthlyBurdenBox" class="mt-3 pt-3 border-top border-secondary border-dashed d-none">
-                            <h5 class="text-danger fw-bold" id="w_percent">0% ของเงินเดือน!</h5>
-                            <small class="text-muted">คิดจากเงินเดือนประมาณการ</small>
-                        </div>
-                        
-                        <hr>
-                        <h5 class="fw-bold mt-2" id="w_verdict">...</h5>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 justify-content-center">
-                    <small class="text-muted text-center" style="font-size: 0.7rem;">
-                        *ระบบคำนวณจากค่าแรงรายชั่วโมง และเงินเดือนในหน้าสลิป
-                    </small>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal fade" id="receiptModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 bg-transparent">
                 <div id="miniReceiptNode">
-                    <div style="border-bottom: 2px double black; margin-bottom: 10px; padding-bottom:5px;">KUROMI RECEIPT</div>
-                    <div class="text-start mb-2">DATE: <span id="r_date"></span></div>
-                    <table class="w-100 mb-3"><tr style="border-bottom: 1px dashed black;"><td class="text-start">ITEM</td><td class="text-end">AMT</td></tr><tr><td class="text-start pt-2" id="r_note">...</td><td class="text-end pt-2" id="r_amount">...</td></tr></table>
-                    <div style="border-top: 2px dashed black; padding-top: 10px;">TOTAL: <span class="fw-bold" id="r_total">...</span></div>
+                    <div style="border-bottom: 2px double black; margin-bottom: 10px; padding-bottom:5px;">
+                        <i class="bi bi-skull"></i> KUROMI RECEIPT
+                    </div>
+                    <div class="text-start mb-2">
+                        DATE: <span id="r_date"></span><br>
+                        TIME: --:--
+                    </div>
+                    <table class="w-100 mb-3" style="border-collapse: collapse;">
+                        <tr style="border-bottom: 1px dashed black;">
+                            <td class="text-start">ITEM</td>
+                            <td class="text-end">AMT</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start pt-2" id="r_note">...</td>
+                            <td class="text-end pt-2" id="r_amount">...</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start small text-muted" id="r_type">...</td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <div style="border-top: 2px dashed black; padding-top: 10px; margin-top: 20px;">
+                        TOTAL: <span class="fw-bold" id="r_total">...</span>
+                    </div>
+                    <div class="mt-3 small opacity-50">THANK YOU!</div>
+                    <div class="barcode mt-2" style="height: 30px; background: repeating-linear-gradient(to right, #000 0px, #000 2px, transparent 2px, transparent 4px);"></div>
                 </div>
-                <div class="text-center mt-3"><button class="btn btn-light fw-bold rounded-pill shadow" onclick="capture('miniReceiptNode', 'MiniSlip')">บันทึก</button></div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-light fw-bold rounded-pill shadow" onclick="capture('miniReceiptNode', 'MiniSlip')">
+                        <i class="bi bi-download"></i> บันทึกเป็นภาพ
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Shared functions
-        function capture(id, n) { const node=document.getElementById(id); html2canvas(node,{scale:2,backgroundColor:null}).then(c=>{const l=document.createElement('a');l.download=n+'.png';l.href=c.toDataURL();l.click();}); }
-        const rModal = new bootstrap.Modal(document.getElementById('receiptModal'));
-        function showReceipt(n,a,d,t){ document.getElementById('r_note').innerText=n; document.getElementById('r_amount').innerText=parseFloat(a).toFixed(2); document.getElementById('r_total').innerText=parseFloat(a).toFixed(2); document.getElementById('r_date').innerText=d; rModal.show(); }
-        const cats = { expense: ["ของกิน", "เดินทาง", "ช้อปปิ้ง", "บิล", "อื่นๆ"], income: ["เงินเดือน", "โบนัส", "ขายของ", "อื่นๆ"] };
-        function toggleCategories() { const t=document.getElementById("typeSelect").value; const s=document.getElementById("categorySelect"); s.innerHTML=""; cats[t].forEach(c=>{let o=document.createElement("option");o.innerText=c;o.value=c;s.appendChild(o);}); } toggleCategories();
+        // JS Functions (Same as before)
+        function capture(id, filename) {
+            const node = document.getElementById(id);
+            html2canvas(node, { scale: 2, backgroundColor: null }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = filename + '_' + Date.now() + '.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+        
+        const receiptModal = new bootstrap.Modal(document.getElementById('receiptModal'));
+        function showReceipt(note, amount, date, type) {
+            document.getElementById('r_note').innerText = note;
+            document.getElementById('r_amount').innerText = parseFloat(amount).toFixed(2);
+            document.getElementById('r_total').innerText = parseFloat(amount).toFixed(2);
+            document.getElementById('r_date').innerText = date;
+            document.getElementById('r_type').innerText = type.toUpperCase();
+            document.getElementById('r_amount').style.color = type === 'income' ? 'green' : 'red';
+            receiptModal.show();
+        }
 
-        // Salary Logic (Simplified for display)
-        function safeEval(s){ try{return new Function('return '+s)()||0;}catch{return 0;} }
-        function getVal(id){ let e=document.getElementById(id); if(!e)return 0; let v=e.value; if(/[+\-*/]/.test(v)){let r=safeEval(v);e.value=r;return r;} return parseFloat(v)||0; }
+        const cats = { expense: ["ของกิน", "เดินทาง", "ช้อปปิ้ง", "บิล", "อื่นๆ"], income: ["เงินเดือน", "โบนัส", "ขายของ", "อื่นๆ"] };
+        function toggleCategories() {
+            const type = document.getElementById("typeSelect").value;
+            const sel = document.getElementById("categorySelect");
+            sel.innerHTML = "";
+            cats[type].forEach(c => {
+                let opt = document.createElement("option");
+                opt.innerText = c; opt.value = c; sel.appendChild(opt);
+            });
+        }
+        toggleCategories();
+
+        function safeEval(str) { try { return new Function('return ' + str)() || 0; } catch { return 0; } }
+        function getVal(id) {
+            let el = document.getElementById(id); if(!el) return 0;
+            let valStr = el.value;
+            if(/[+\-*/]/.test(valStr)) { let res = safeEval(valStr); el.value = res; return res; }
+            return parseFloat(valStr) || 0;
+        }
+        function setTxt(id, val) { document.getElementById(id).innerText = val.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
         function calcSalary() {
-            let s=getVal('s_salary'), c=getVal('s_col'), o=getVal('s_other');
-            let ot_hr=getVal('ot_total_hr');
-            let base = s+c;
-            let rate = base>0 ? (base/30)/8 : 0;
-            document.getElementById('ot_rate_display').innerText = rate.toFixed(2);
-            let ot_amt = rate * 1.5 * ot_hr; // Simplified OT calc
-            document.getElementById('ot_amt').innerText = ot_amt.toFixed(2);
-            let gross = base + o + ot_amt;
-            document.getElementById('gross_income').innerText = gross.toFixed(2);
-            let d = getVal('d_total');
-            let net = gross - d;
-            document.getElementById('net_pay_display').innerText = net.toLocaleString();
+            let salary = getVal('s_salary'); let col = getVal('s_col'); let level = getVal('s_level');
+            let diligence = getVal('s_diligence'); let food = getVal('s_food'); let other = getVal('s_other');
+            let baseForOt = salary + col + level;
+            let rate = baseForOt > 0 ? (baseForOt / 30) / 8 : 0;
+            setTxt('ot_rate_display', rate);
+            
+            let h15 = getVal('ot_15_hr'); let h13 = getVal('ot_13_hr'); let h30 = getVal('ot_30_hr');
+            let amt15 = rate * 1.5 * h15; let amt13 = rate * 1.3 * h13; let amt30 = rate * 3.0 * h30;
+            setTxt('ot_15_amt', amt15); setTxt('ot_13_amt', amt13); setTxt('ot_30_amt', amt30);
+            
+            let otFoodAmt = (h15 + h13 + h30) * 20; setTxt('ot_food_amt', otFoodAmt);
+            let gross = baseForOt + diligence + food + other + amt15 + amt13 + amt30 + otFoodAmt;
+            setTxt('gross_income', gross);
+            
+            let totalDeduct = getVal('d_tax') + getVal('d_sso') + getVal('d_fund');
+            let net = gross - totalDeduct;
+            setTxt('net_pay_display', net);
             document.getElementById('final_salary_amount').value = net;
         }
-        function submitSalary(){ calcSalary(); if(confirm("บันทึก?")) document.getElementById('salaryForm').submit(); }
-        function savePreset(){ const p={}; document.querySelectorAll('.retro-input').forEach(i=>p[i.id]=i.value); fetch('/save_salary_preset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)}).then(()=>alert("Saved!")); }
-        calcSalary();
-
-        // === WORTH IT CALCULATOR LOGIC ===
-        function calculateWorth() {
-            const price = parseFloat(document.getElementById("w_price").value) || 0;
-            const wage = parseFloat(document.getElementById("w_wage").value) || 0;
-            const resBox = document.getElementById("worthResult");
-            
-            // Try to get Monthly Income from Salary Tab (Net Pay) or Estimate
-            let monthlyIncome = parseFloat(document.getElementById("net_pay_display").innerText.replace(/,/g, '')) || 0;
-            if (monthlyIncome === 0 && wage > 0) monthlyIncome = wage * 8 * 26; // Estimate if no slip data
-
-            if (price <= 0 || wage <= 0) {
-                resBox.style.display = "none";
-                return;
-            }
-
-            resBox.style.display = "block";
-            
-            // 1. Time Calc
-            const hours = price / wage;
-            const h = Math.floor(hours);
-            const m = Math.round((hours - h) * 60);
-            document.getElementById("w_time").innerText = `${h} ชม. ${m} น.`;
-
-            // 2. Monthly Burden (Show if price > 1000)
-            const burdenBox = document.getElementById("monthlyBurdenBox");
-            if (price > 1000 && monthlyIncome > 0) {
-                const percent = (price / monthlyIncome) * 100;
-                document.getElementById("w_percent").innerText = `${percent.toFixed(1)}% ของเงินเดือน`;
-                burdenBox.classList.remove("d-none");
-                
-                // Color Code
-                const pTxt = document.getElementById("w_percent");
-                if(percent > 50) pTxt.className = "fw-bold text-danger"; // >50% Red
-                else if(percent > 20) pTxt.className = "fw-bold text-warning"; // >20% Orange
-                else pTxt.className = "fw-bold text-success"; // <20% Green
-            } else {
-                burdenBox.classList.add("d-none");
-            }
-
-            // 3. Verdict
-            const v = document.getElementById("w_verdict");
-            if (hours < 4) { v.innerText = "😈 จิ๊บๆ ซื้อเลย!"; v.className = "fw-bold text-success"; }
-            else if (hours < 16) { v.innerText = "🤔 คิดดูก่อน (ทำงาน 1-2 วัน)"; v.className = "fw-bold text-warning"; }
-            else if (hours < 80) { v.innerText = "💀 เริ่มแพงละนะ"; v.className = "fw-bold text-danger"; }
-            else { v.innerText = "🚫 หยุด! เก็บเงินก่อนเถอะ"; v.className = "fw-bold text-dark"; }
+        function submitSalary() { calcSalary(); if(confirm("ยืนยันการบันทึกยอดเงินเดือน?")) document.getElementById('salaryForm').submit(); }
+        function savePreset() {
+            const preset = {}; document.querySelectorAll('.retro-input').forEach(input => preset[input.id] = input.value);
+            fetch('/save_salary_preset', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(preset) })
+            .then(() => alert("จำค่าเรียบร้อย!"));
         }
+        calcSalary();
     </script>
 </body>
 </html>
