@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuromi Money Manager</title>
+    <title>Kuromi Money Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Chakra+Petch:wght@400;600&family=VT323&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <style>
         /* === MAIN THEME (Kuromi) === */
@@ -18,11 +19,9 @@
         }
         body { background-color: var(--k-bg); font-family: 'Kanit', sans-serif; padding-bottom: 80px; }
         
-        /* Tabs Styling */
         .nav-pills .nav-link { color: var(--k-dark); background: white; border: 2px solid var(--k-dark); margin: 0 4px; border-radius: 50px; }
         .nav-pills .nav-link.active { background: var(--k-dark); color: #e1bee7; transform: scale(1.05); }
 
-        /* Kuromi Card */
         .k-card { background: white; border: 2px solid var(--k-dark); border-radius: 18px; box-shadow: 4px 4px 0px rgba(0,0,0,0.8); margin-bottom: 15px; }
 
         /* === PIGGY BANK UI === */
@@ -53,17 +52,13 @@
         }
         .piggy-fill {
             height: 100%; background: repeating-linear-gradient(45deg, #e91e63, #e91e63 10px, #ff4081 10px, #ff4081 20px);
-            transition: width 0.5s;
         }
 
-        /* === RETRO RECEIPT THEME (Copy from Salary.html) === */
-        .retro-wrapper {
-            font-family: 'Chakra Petch', sans-serif;
-            color: #2b2b2b;
-        }
+        /* === RETRO RECEIPT STYLE === */
+        .retro-wrapper { font-family: 'Chakra Petch', sans-serif; color: #2b2b2b; }
         .receipt-paper {
             background-color: #f6f6f6;
-            padding: 20px 15px;
+            padding: 25px 20px;
             position: relative;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -82,21 +77,30 @@
             font-family: 'VT323', monospace; font-size: 1.3rem; border: none; border-bottom: 1px dotted #888;
             background: transparent; text-align: right; width: 90px; color: #2b2b2b;
         }
-        .retro-input:focus { outline: none; background: #e0e0e0; border-bottom: 1px solid black; }
         .vt-font { font-family: 'VT323', monospace; font-size: 1.4rem; }
         .retro-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; line-height: 1.4; }
         .retro-brand { font-family: 'VT323', monospace; font-size: 2rem; border-bottom: 2px solid black; display: inline-block; margin-bottom: 10px; }
         .hrs-input { width: 40px; text-align: center; background: #ddd; }
         .amt-text { font-family: 'VT323', monospace; font-size: 1.3rem; min-width: 70px; text-align: right; display: inline-block; }
 
+        /* === MINI RECEIPT MODAL === */
+        #miniReceiptNode {
+            width: 300px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border: 1px dashed #333;
+            text-align: center;
+            font-family: 'VT323', monospace;
+        }
     </style>
 </head>
 <body>
     <div class="container py-3" style="max-width: 600px;">
         
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-bold m-0"><i class="bi bi-skull-fill"></i> Kuromi Money</h4>
-            <span class="badge bg-dark">Termux Ed.</span>
+            <h4 class="fw-bold m-0"><i class="bi bi-skull-fill"></i> Kuromi Pro</h4>
+            <span class="badge bg-dark">Capture Ready 📸</span>
         </div>
 
         <ul class="nav nav-pills nav-fill mb-4" id="pills-tab" role="tablist">
@@ -134,29 +138,34 @@
                     </form>
                 </div>
 
-                <h6 class="fw-bold ms-2">ล่าสุด</h6>
+                <h6 class="fw-bold ms-2">ล่าสุด (กด 🧾 เพื่อดูสลิป)</h6>
                 {% for t in transactions %}
                 <div class="k-card p-2 px-3 d-flex justify-content-between align-items-center mb-2">
                     <div>
                         <div class="fw-bold">{{ t.note }}</div>
                         <small class="text-muted">{{ t.date }} <span class="badge bg-light text-dark border">{{ t.category }}</span></small>
                     </div>
-                    <div class="text-end">
+                    <div class="text-end d-flex align-items-center gap-2">
                         <span class="{{ 'text-success' if t.type == 'income' else 'text-danger' }} fw-bold">
                             {{ '+' if t.type == 'income' else '-' }}{{ "{:,.2f}".format(t.amount) }}
                         </span>
-                        <a href="/delete/{{ t.id }}" class="text-secondary ms-2" onclick="return confirm('ลบ?')"><i class="bi bi-x-circle"></i></a>
+                        <button class="btn btn-sm btn-outline-dark border-0" 
+                                onclick='showReceipt("{{ t.note }}", "{{ t.amount }}", "{{ t.date }}", "{{ t.type }}")'>
+                            🧾
+                        </button>
+                        <a href="/delete/{{ t.id }}" class="text-secondary" onclick="return confirm('ลบ?')"><i class="bi bi-x-circle"></i></a>
                     </div>
                 </div>
                 {% endfor %}
             </div>
 
             <div class="tab-pane fade retro-wrapper" id="content-salary">
-                <div class="text-center mb-2">
-                    <button class="btn btn-sm btn-dark rounded-pill px-3" onclick="savePreset()"><i class="bi bi-save-fill"></i> จำค่าที่กรอก</button>
+                <div class="d-flex justify-content-center gap-2 mb-2">
+                    <button class="btn btn-sm btn-dark rounded-pill px-3" onclick="savePreset()"><i class="bi bi-save-fill"></i> จำค่า</button>
+                    <button class="btn btn-sm btn-warning rounded-pill px-3" onclick="capture('salary-slip-node', 'MySalarySlip')"><i class="bi bi-camera-fill"></i> บันทึกภาพสลิป</button>
                 </div>
                 
-                <div class="receipt-paper">
+                <div class="receipt-paper" id="salary-slip-node">
                     <div class="jagged-top"></div>
                     
                     <div class="text-center">
@@ -197,7 +206,7 @@
                         </div>
                     </div>
                     <div class="retro-row">
-                        <span>ค่าอาหาร OT (20บ.)</span>
+                        <span>ค่าอาหาร OT</span>
                         <span class="amt-text" id="ot_food_amt">0.00</span>
                     </div>
 
@@ -214,23 +223,23 @@
                     <div style="border-bottom: 3px double black; margin: 15px 0;"></div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold fs-5">NET PAY (สุทธิ)</span>
+                        <span class="fw-bold fs-5">NET PAY</span>
                         <span class="vt-font fw-bold fs-1" id="net_pay_display">0.00</span>
                     </div>
 
-                    <div class="mt-4 pt-3 border-top border-dark border-dashed">
-                         <form action="/add" method="POST" id="salaryForm">
-                            <input type="hidden" name="type" value="income">
-                            <input type="hidden" name="category" value="เงินเดือน">
-                            <input type="hidden" name="note" value="เงินเดือนสุทธิ">
-                            <input type="hidden" name="amount" id="final_salary_amount">
-                            <button type="button" onclick="submitSalary()" class="btn w-100 py-2 border-2 border-dark fw-bold" style="font-family:'Chakra Petch';">
-                                <i class="bi bi-box-arrow-down"></i> บันทึกเข้า Dashboard
-                            </button>
-                        </form>
-                    </div>
-
                     <div class="jagged-bottom"></div>
+                </div>
+
+                <div class="mt-4">
+                     <form action="/add" method="POST" id="salaryForm">
+                        <input type="hidden" name="type" value="income">
+                        <input type="hidden" name="category" value="เงินเดือน">
+                        <input type="hidden" name="note" value="เงินเดือนสุทธิ">
+                        <input type="hidden" name="amount" id="final_salary_amount">
+                        <button type="button" onclick="submitSalary()" class="btn w-100 py-2 border-2 border-dark fw-bold btn-light">
+                            <i class="bi bi-box-arrow-down"></i> บันทึกเข้า Dashboard
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -252,26 +261,35 @@
                 </div>
 
                 {% for goal in savings %}
-                <div class="piggy-jar">
-                    <div class="piggy-nose">
-                        <div class="nostril"></div><div class="nostril"></div>
+                <div class="position-relative">
+                    <div class="piggy-jar" id="piggy-{{ goal.id }}">
+                        <div class="piggy-nose">
+                            <div class="nostril"></div><div class="nostril"></div>
+                        </div>
+                        
+                        <div class="text-center mb-2">
+                            <h5 class="fw-bold m-0" style="color: #880e4f;">{{ goal.name }}</h5>
+                            <small class="text-muted">{{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }} บาท</small>
+                        </div>
+                        
+                        {% set pct = (goal.current / goal.target * 100) | round(1) %}
+                        <div class="piggy-progress mb-3">
+                            <div class="piggy-fill" style="width: {{ pct }}%;"></div>
+                        </div>
+                        
+                        <div class="text-center opacity-25" style="font-size:0.7rem;">Kuromi Money Savings</div>
                     </div>
                     
-                    <div class="text-center mb-2">
-                        <h5 class="fw-bold m-0" style="color: #880e4f;">{{ goal.name }}</h5>
-                        <small class="text-muted">{{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }} บาท</small>
+                    <div class="d-flex justify-content-between align-items-center px-2 mb-4">
+                        <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="capture('piggy-{{ goal.id }}', 'Saving_{{ goal.name }}')">
+                            <i class="bi bi-camera-fill"></i> เซฟรูป
+                        </button>
+                        <form action="/update_saving" method="POST" class="d-flex gap-2">
+                            <input type="hidden" name="goal_id" value="{{ goal.id }}">
+                            <input type="number" name="amount" class="form-control border-danger text-danger fw-bold form-control-sm" style="width: 80px;" placeholder="หยอด" required>
+                            <button type="submit" class="btn btn-sm btn-danger rounded-circle"><i class="bi bi-coin"></i></button>
+                        </form>
                     </div>
-                    
-                    {% set pct = (goal.current / goal.target * 100) | round(1) %}
-                    <div class="piggy-progress mb-3">
-                        <div class="piggy-fill" style="width: {{ pct }}%;"></div>
-                    </div>
-
-                    <form action="/update_saving" method="POST" class="d-flex gap-2 justify-content-center">
-                        <input type="hidden" name="goal_id" value="{{ goal.id }}">
-                        <input type="number" name="amount" class="form-control border-danger text-danger fw-bold form-control-sm" style="width: 100px;" placeholder="หยอดเงิน" required>
-                        <button type="submit" class="btn btn-sm btn-danger rounded-pill"><i class="bi bi-coin"></i> หยอด</button>
-                    </form>
                 </div>
                 {% else %}
                 <div class="text-center py-5 text-muted">
@@ -283,9 +301,83 @@
 
         </div> </div>
 
+    <div class="modal fade" id="receiptModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 bg-transparent">
+                <div id="miniReceiptNode">
+                    <div style="border-bottom: 2px double black; margin-bottom: 10px; padding-bottom:5px;">
+                        <i class="bi bi-skull"></i> KUROMI RECEIPT
+                    </div>
+                    <div class="text-start mb-2">
+                        DATE: <span id="r_date"></span><br>
+                        TIME: --:--
+                    </div>
+                    <table class="w-100 mb-3" style="border-collapse: collapse;">
+                        <tr style="border-bottom: 1px dashed black;">
+                            <td class="text-start">ITEM</td>
+                            <td class="text-end">AMT</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start pt-2" id="r_note">...</td>
+                            <td class="text-end pt-2" id="r_amount">...</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start small text-muted" id="r_type">...</td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <div style="border-top: 2px dashed black; padding-top: 10px; margin-top: 20px;">
+                        TOTAL: <span class="fw-bold" id="r_total">...</span>
+                    </div>
+                    <div class="mt-3 small opacity-50">THANK YOU!</div>
+                    <div class="barcode mt-2" style="height: 30px; background: repeating-linear-gradient(to right, #000 0px, #000 2px, transparent 2px, transparent 4px);"></div>
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-light fw-bold rounded-pill shadow" onclick="capture('miniReceiptNode', 'MiniSlip')">
+                        <i class="bi bi-download"></i> บันทึกเป็นภาพ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- Categories ---
+        // === 1. CAPTURE LOGIC ===
+        function capture(id, filename) {
+            const node = document.getElementById(id);
+            // เทคนิค: ถ้าแคปสลิป Retro ให้เปลี่ยนพื้นหลังเป็นสีขาวชั่วคราวเพื่อให้ชัด
+            const originalBg = node.style.background;
+            
+            html2canvas(node, {
+                scale: 2, // ชัดระดับ Retina
+                backgroundColor: null, // โปร่งใสหรือตาม CSS
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = filename + '_' + Date.now() + '.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            }).catch(err => alert("เกิดข้อผิดพลาดในการบันทึกภาพ: " + err));
+        }
+
+        // === 2. MINI RECEIPT LOGIC ===
+        const receiptModal = new bootstrap.Modal(document.getElementById('receiptModal'));
+        function showReceipt(note, amount, date, type) {
+            document.getElementById('r_note').innerText = note;
+            document.getElementById('r_amount').innerText = parseFloat(amount).toFixed(2);
+            document.getElementById('r_total').innerText = parseFloat(amount).toFixed(2);
+            document.getElementById('r_date').innerText = date;
+            document.getElementById('r_type').innerText = type.toUpperCase();
+            
+            // เปลี่ยนสีตัวอักษรตามประเภท
+            const amtEl = document.getElementById('r_amount');
+            if(type === 'income') amtEl.style.color = 'green';
+            else amtEl.style.color = 'red';
+
+            receiptModal.show();
+        }
+
+        // === 3. GENERAL LOGIC ===
         const cats = {
             expense: ["ของกิน", "เดินทาง", "ช้อปปิ้ง", "บิล", "อื่นๆ"],
             income: ["เงินเดือน", "โบนัส", "ขายของ", "อื่นๆ"]
@@ -301,7 +393,7 @@
         }
         toggleCategories();
 
-        // --- Retro Salary Logic (Full Port) ---
+        // === 4. SALARY CALC LOGIC ===
         function safeEval(str) {
             try { return new Function('return ' + str)() || 0; } catch { return 0; }
         }
@@ -321,7 +413,6 @@
         }
 
         function calcSalary() {
-            // 1. Income
             let salary = getVal('s_salary');
             let col = getVal('s_col');
             let level = getVal('s_level');
@@ -329,13 +420,11 @@
             let food = getVal('s_food');
             let other = getVal('s_other');
 
-            // OT Rate Calculation: (Base + COL + Level) / 30 / 8
             let baseForOt = salary + col + level;
             let rate = 0;
             if (baseForOt > 0) rate = (baseForOt / 30) / 8;
             setTxt('ot_rate_display', rate);
 
-            // OT Amounts
             let h15 = getVal('ot_15_hr');
             let h13 = getVal('ot_13_hr');
             let h30 = getVal('ot_30_hr');
@@ -348,26 +437,20 @@
             setTxt('ot_13_amt', amt13);
             setTxt('ot_30_amt', amt30);
 
-            // OT Food (20 THB per hr)
             let totalOtHrs = h15 + h13 + h30;
             let otFoodAmt = totalOtHrs * 20;
             setTxt('ot_food_amt', otFoodAmt);
 
-            // Gross Income
             let gross = baseForOt + diligence + food + other + amt15 + amt13 + amt30 + otFoodAmt;
             setTxt('gross_income', gross);
 
-            // 2. Deduct
             let tax = getVal('d_tax');
             let sso = getVal('d_sso');
             let fund = getVal('d_fund');
             let totalDeduct = tax + sso + fund;
 
-            // 3. Net Pay
             let net = gross - totalDeduct;
             setTxt('net_pay_display', net);
-            
-            // Set for form submit
             document.getElementById('final_salary_amount').value = net;
         }
 
@@ -379,21 +462,15 @@
         }
 
         function savePreset() {
-            // Collect all inputs to save
             const preset = {};
-            const inputs = document.querySelectorAll('.retro-input');
-            inputs.forEach(input => {
-                preset[input.id] = input.value;
-            });
-            
+            document.querySelectorAll('.retro-input').forEach(input => preset[input.id] = input.value);
             fetch('/save_salary_preset', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(preset)
-            }).then(() => alert("จำค่าทุกช่องเรียบร้อย!"));
+            }).then(() => alert("จำค่าเรียบร้อย!"));
         }
 
-        // Init
         calcSalary();
     </script>
 </body>
