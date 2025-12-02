@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import json
 import os
 import uuid
@@ -7,11 +7,13 @@ from datetime import datetime
 app = Flask(__name__)
 DATA_FILE = "data.json"
 
-# --- ส่วนจัดการข้อมูล ---
+# --- Data Management ---
 def load_data():
     default_data = {
         "transactions": [],
-        "settings": {"hourly_wage": 0} # ค่าเริ่มต้น
+        "settings": {"hourly_wage": 0.0},
+        "savings_goals": [],
+        "salary_preset": {} # จำค่าที่เคยกรอกในหน้าเงินเดือน
     }
     
     if not os.path.exists(DATA_FILE):
@@ -20,9 +22,10 @@ def load_data():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-            # ป้องกัน error กรณีไฟล์เก่าไม่มี settings
-            if "settings" not in data:
-                data["settings"] = {"hourly_wage": 0}
+            # Ensure keys exist
+            for key in default_data:
+                if key not in data:
+                    data[key] = default_data[key]
             return data
     except:
         return default_data
@@ -36,57 +39,96 @@ def save_data(data):
 def index():
     data = load_data()
     transactions = data["transactions"]
-    settings = data.get("settings", {"hourly_wage": 0})
+    settings = data.get("settings", {"hourly_wage": 0.0})
+    savings = data.get("savings_goals", [])
+    salary_preset = data.get("salary_preset", {})
     
-    # คำนวณยอดรวม
     total_income = sum(t["amount"] for t in transactions if t["type"] == "income")
     total_expense = sum(t["amount"] for t in transactions if t["type"] == "expense")
     balance = total_income - total_expense
     
-    # กราฟ
+    # Chart Data
     expense_by_cat = {}
     for t in transactions:
         if t["type"] == "expense":
             cat = t.get("category", "อื่นๆ")
             expense_by_cat[cat] = expense_by_cat.get(cat, 0) + t["amount"]
     
-    chart_labels = list(expense_by_cat.keys())
-    chart_data = list(expense_by_cat.values())
-
     return render_template("index.html", 
                            transactions=reversed(transactions), 
                            income=total_income, 
                            expense=total_expense, 
                            balance=balance,
                            settings=settings,
-                           chart_labels=json.dumps(chart_labels, ensure_ascii=False),
-                           chart_data=json.dumps(chart_data))
+                           savings=savings,
+                           salary_preset=salary_preset,
+                           chart_labels=json.dumps(list(expense_by_cat.keys()), ensure_ascii=False),
+                           chart_data=json.dumps(list(expense_by_cat.values())))
 
 @app.route("/add", methods=["POST"])
 def add_transaction():
-    t_type = request.form.get("type")
-    category = request.form.get("category")
-    amount = float(request.form.get("amount"))
-    note = request.form.get("note")
-    
     data = load_data()
+    try:
+        amount = float(request.form.get("amount"))
+    except:
+        amount = 0.0
+        
     new_data = {
         "id": str(uuid.uuid4()),
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "type": t_type,
-        "category": category,
+        "type": request.form.get("type"),
+        "category": request.form.get("category"),
         "amount": amount,
-        "note": note
+        "note": request.form.get("note")
     }
     data["transactions"].append(new_data)
     save_data(data)
     return redirect(url_for("index"))
 
-@app.route("/update_settings", methods=["POST"])
-def update_settings():
-    wage = float(request.form.get("hourly_wage", 0))
+@app.route("/save_salary_preset", methods=["POST"])
+def save_salary_preset():
+    # รับข้อมูล JSON จากหน้าเว็บ (AJAX)
+    preset = request.json
     data = load_data()
-    data["settings"]["hourly_wage"] = wage
+    data["salary_preset"] = preset
+    save_data(data)
+    return jsonify({"status": "success"})
+
+@app.route("/add_saving_goal", methods=["POST"])
+def add_saving_goal():
+    data = load_data()
+    new_goal = {
+        "id": str(uuid.uuid4()),
+        "name": request.form.get("name"),
+        "target": float(request.form.get("target")),
+        "current": 0.0,
+        "icon": request.form.get("icon", "bi-piggy-bank")
+    }
+    data["savings_goals"].append(new_goal)
+    save_data(data)
+    return redirect(url_for("index"))
+
+@app.route("/update_saving", methods=["POST"])
+def update_saving():
+    goal_id = request.form.get("goal_id")
+    amount = float(request.form.get("amount")) # จำนวนที่เติมเพิ่ม
+    
+    data = load_data()
+    for goal in data["savings_goals"]:
+        if goal["id"] == goal_id:
+            goal["current"] += amount
+            # สร้าง Transaction รายจ่ายอัตโนมัติว่า "ออมเงิน"
+            if amount > 0:
+                data["transactions"].append({
+                    "id": str(uuid.uuid4()),
+                    "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "type": "expense",
+                    "category": "เงินออม",
+                    "amount": amount,
+                    "note": f"ออมเงินเพื่อ: {goal['name']}"
+                })
+            break
+            
     save_data(data)
     return redirect(url_for("index"))
 
@@ -94,6 +136,17 @@ def update_settings():
 def delete_transaction(t_id):
     data = load_data()
     data["transactions"] = [t for t in data["transactions"] if t.get("id") != t_id]
+    save_data(data)
+    return redirect(url_for("index"))
+
+@app.route("/update_settings", methods=["POST"])
+def update_settings():
+    try:
+        wage = float(request.form.get("hourly_wage", 0.0))
+    except:
+        wage = 0.0
+    data = load_data()
+    data["settings"]["hourly_wage"] = wage
     save_data(data)
     return redirect(url_for("index"))
 
