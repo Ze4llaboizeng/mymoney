@@ -13,7 +13,7 @@ def load_data():
         "transactions": [],
         "settings": {"hourly_wage": 0.0},
         "savings_goals": [],
-        "salary_preset": {} # จำค่าที่เคยกรอกในหน้าเงินเดือน
+        "salary_preset": {} 
     }
     
     if not os.path.exists(DATA_FILE):
@@ -22,7 +22,6 @@ def load_data():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-            # Ensure keys exist
             for key in default_data:
                 if key not in data:
                     data[key] = default_data[key]
@@ -87,7 +86,6 @@ def add_transaction():
 
 @app.route("/save_salary_preset", methods=["POST"])
 def save_salary_preset():
-    # รับข้อมูล JSON จากหน้าเว็บ (AJAX)
     preset = request.json
     data = load_data()
     data["salary_preset"] = preset
@@ -111,13 +109,15 @@ def add_saving_goal():
 @app.route("/update_saving", methods=["POST"])
 def update_saving():
     goal_id = request.form.get("goal_id")
-    amount = float(request.form.get("amount")) # จำนวนที่เติมเพิ่ม
+    try:
+        amount = float(request.form.get("amount"))
+    except:
+        amount = 0.0
     
     data = load_data()
     for goal in data["savings_goals"]:
         if goal["id"] == goal_id:
             goal["current"] += amount
-            # สร้าง Transaction รายจ่ายอัตโนมัติว่า "ออมเงิน"
             if amount > 0:
                 data["transactions"].append({
                     "id": str(uuid.uuid4()),
