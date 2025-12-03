@@ -601,12 +601,32 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // === Bottom Nav Logic ===
+        // === FIXED: Manual Tab Switching Logic (แก้ปัญหากดไม่ติด) ===
         const navBtns = document.querySelectorAll('.nav-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
         navBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault(); // ป้องกันการเด้งมั่ว
+
+                // 1. จัดการปุ่มเมนูข้างล่าง (Button Visual)
                 navBtns.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
+
+                // 2. จัดการสลับหน้าเนื้อหา (Content Switching)
+                // ซ่อนทุกหน้าก่อน
+                tabPanes.forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+
+                // แสดงหน้าตามเป้าหมายที่ระบุใน data-bs-target
+                const targetId = this.getAttribute('data-bs-target');
+                const targetPane = document.querySelector(targetId);
+                if(targetPane) {
+                    targetPane.classList.add('show', 'active');
+                    // เลื่อนหน้าจอขึ้นบนสุดเวลากดเปลี่ยนแท็บ
+                    window.scrollTo(0, 0); 
+                }
             });
         });
 
@@ -615,6 +635,7 @@
         const dateStr = date.toLocaleDateString('th-TH');
         if(document.getElementById('currentDate')) document.getElementById('currentDate').innerText = dateStr;
 
+        // === Capture Function ===
         function capture(id, filename) {
             const node = document.getElementById(id);
             html2canvas(node, { scale: 2, backgroundColor: null }).then(canvas => {
@@ -640,6 +661,9 @@
                 typeEl = document.getElementById("edit_type");
                 selEl = document.getElementById("edit_category");
             }
+            // ป้องกัน error ถ้าหา element ไม่เจอ
+            if(!typeEl || !selEl) return;
+
             const type = typeEl.value;
             selEl.innerHTML = "";
             cats[type].forEach(c => {
@@ -649,25 +673,31 @@
                 selEl.appendChild(opt);
             });
         }
-        toggleCategories('categorySelect');
+        // เรียกใช้ครั้งแรก
+        if(document.getElementById("typeSelect")) toggleCategories('categorySelect');
 
-        const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+        // Init Edit Modal
+        const editModalEl = document.getElementById('editModal');
+        let editModal;
+        if (editModalEl) {
+            editModal = new bootstrap.Modal(editModalEl);
+        }
+
         function openEditModal(t) {
             document.getElementById('edit_id').value = t.id;
             document.getElementById('edit_amount').value = t.amount;
             document.getElementById('edit_note').value = t.note;
             document.getElementById('edit_type').value = t.type;
             toggleCategories('edit_category', t.category);
-            editModal.show();
+            if(editModal) editModal.show();
         }
 
-        // === NEW MATH CORE LOGIC (From provided code) ===
+        // === MATH CORE LOGIC ===
         function fmt(num) {
             return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
         function safeEvaluate(str) {
             try {
-                // Ensure string, remove commas first
                 let s = String(str).replace(/,/g, '');
                 if (!/^[0-9+\-*/.()\s]+$/.test(s)) return 0;
                 return new Function('return ' + s)() || 0;
@@ -694,6 +724,9 @@
         }
 
         function calc() {
+            // Check if element exists before processing (ป้องกัน error หน้าอื่น)
+            if(!document.getElementById('salary')) return;
+
             // 1. INCOME
             let salary = getVal('salary');
             let col = getVal('col');
@@ -706,7 +739,7 @@
             let baseForOt = salary + col + level;
             let rate = 0;
             if(baseForOt > 0) rate = (baseForOt / 30) / 8;
-            document.getElementById('hr_rate').innerText = fmt(rate);
+            if(document.getElementById('hr_rate')) document.getElementById('hr_rate').innerText = fmt(rate);
 
             // OT Amounts
             let h15 = getVal('ot15_hr');
@@ -717,29 +750,28 @@
             let amt13 = rate * 1.3 * h13;
             let amt30 = rate * 3.0 * h30;
 
-            document.getElementById('ot15_amt').innerText = fmt(amt15);
-            document.getElementById('ot13_amt').innerText = fmt(amt13);
-            document.getElementById('ot30_amt').innerText = fmt(amt30);
+            if(document.getElementById('ot15_amt')) document.getElementById('ot15_amt').innerText = fmt(amt15);
+            if(document.getElementById('ot13_amt')) document.getElementById('ot13_amt').innerText = fmt(amt13);
+            if(document.getElementById('ot30_amt')) document.getElementById('ot30_amt').innerText = fmt(amt30);
 
-            // OT Food (20 THB/Hr) - Simplified assumption: each hour count gets 20 baht? Or based on unique days? 
-            // Based on user code: "let totalOtHrs = h15 + h13 + h30"
+            // OT Food
             let totalOtHrs = h15 + h13 + h30;
             let otFoodAmt = totalOtHrs * 20;
-            document.getElementById('ot_food_amt').innerText = fmt(otFoodAmt);
+            if(document.getElementById('ot_food_amt')) document.getElementById('ot_food_amt').innerText = fmt(otFoodAmt);
 
             // Total Income
             let totalIncome = baseForOt + diligence + food + other + amt15 + amt13 + amt30 + otFoodAmt;
-            document.getElementById('total_income').innerText = fmt(totalIncome);
+            if(document.getElementById('total_income')) document.getElementById('total_income').innerText = fmt(totalIncome);
 
             // 2. DEDUCT
             let deductInputs = document.querySelectorAll('.deduct');
             let totalDeduct = 0;
             deductInputs.forEach(el => totalDeduct += safeEvaluate(el.value));
-            document.getElementById('total_deduct').innerText = fmt(totalDeduct);
+            if(document.getElementById('total_deduct')) document.getElementById('total_deduct').innerText = fmt(totalDeduct);
 
             let netPay = totalIncome - totalDeduct;
-            document.getElementById('net_pay').innerText = fmt(netPay);
-            document.getElementById('final_salary_amount').value = netPay.toFixed(2);
+            if(document.getElementById('net_pay')) document.getElementById('net_pay').innerText = fmt(netPay);
+            if(document.getElementById('final_salary_amount')) document.getElementById('final_salary_amount').value = netPay.toFixed(2);
 
             // 3. EXPENSE & SIM BALANCE
             let expInputs = document.querySelectorAll('.expense');
@@ -748,7 +780,7 @@
 
             let totalAllExpense = totalDeduct + privateExp;
             let simBalance = totalIncome - totalAllExpense;
-            document.getElementById('sim_balance').innerText = fmt(simBalance);
+            if(document.getElementById('sim_balance')) document.getElementById('sim_balance').innerText = fmt(simBalance);
 
             // 4. GRAPHIC
             if(totalIncome > 0) {
@@ -758,14 +790,14 @@
                 if(expPct > 100) expPct = 100;
                 if(balPct < 0) balPct = 0;
 
-                document.getElementById('bar_expense').style.width = expPct + "%";
-                document.getElementById('exp_pct').innerText = expPct.toFixed(1) + "%";
+                if(document.getElementById('bar_expense')) document.getElementById('bar_expense').style.width = expPct + "%";
+                if(document.getElementById('exp_pct')) document.getElementById('exp_pct').innerText = expPct.toFixed(1) + "%";
 
-                document.getElementById('bar_balance').style.width = balPct + "%";
-                document.getElementById('bal_pct').innerText = balPct.toFixed(1) + "%";
+                if(document.getElementById('bar_balance')) document.getElementById('bar_balance').style.width = balPct + "%";
+                if(document.getElementById('bal_pct')) document.getElementById('bal_pct').innerText = balPct.toFixed(1) + "%";
             } else {
-                document.getElementById('bar_expense').style.width = "0%";
-                document.getElementById('bar_balance').style.width = "0%";
+                if(document.getElementById('bar_expense')) document.getElementById('bar_expense').style.width = "0%";
+                if(document.getElementById('bar_balance')) document.getElementById('bar_balance').style.width = "0%";
             }
         }
 
@@ -773,19 +805,21 @@
         
         function savePreset() {
             const preset = {}; 
-            // Select all inputs inside salary-slip-node
             document.querySelectorAll('#salary-slip-node input').forEach(input => preset[input.id] = input.value);
             fetch('/save_salary_preset', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(preset) })
             .then(()=>alert("Saved!"));
         }
 
         // === Worth Logic ===
-        document.getElementById('w_hourly').addEventListener('input', function() { document.getElementById('hidden_wage').value = this.value; });
+        if(document.getElementById('w_hourly')) {
+            document.getElementById('w_hourly').addEventListener('input', function() { document.getElementById('hidden_wage').value = this.value; });
+            document.getElementById('hidden_wage').value = document.getElementById('w_hourly').value;
+        }
+
         function calcWorth() {
             let price = parseFloat(document.getElementById('w_price').value) || 0;
             let hourly = parseFloat(document.getElementById('w_hourly').value) || 0;
-            // Attempt to get income from simulated salary tab first, if 0 try session data (not avail directly here without reload)
-            // Just use hourly logic mostly
+            
             if(hourly <= 0) { alert("ตั้งค่าแรงต่อชั่วโมงก่อนจ้า"); return; }
             if(price <= 0) return;
 
@@ -799,9 +833,8 @@
             verdict.innerText = hours < 4 ? "😎 จิ๊บๆ ซื้อเลย!" : "✌️ เหนื่อยหน่อยนะ";
         }
         
-        // Init
+        // Init Calc
         calc();
-        document.getElementById('hidden_wage').value = document.getElementById('w_hourly').value;
     </script>
 </body>
 </html>
