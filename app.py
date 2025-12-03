@@ -3,7 +3,6 @@ import json
 import os
 import uuid
 from datetime import datetime
-from collections import defaultdict
 
 app = Flask(__name__)
 DATA_FILE = "data.json"
@@ -20,6 +19,7 @@ def load_data():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
+            # Ensure all keys exist
             for key in default_data:
                 if key not in data: data[key] = default_data[key]
             return data
@@ -42,26 +42,26 @@ def index():
     total_expense = sum(t["amount"] for t in transactions if t["type"] == "expense")
     balance = total_income - total_expense
     
-    # คำนวณสรุปหมวดหมู่จ่ายเงิน (สำหรับหน้า Info Slip)
-    expense_cats = defaultdict(float)
+    # Calculate Summary by Category for the "Recap Slip"
+    category_summary = {}
     for t in transactions:
-        if t["type"] == "expense":
-            expense_cats[t["category"]] += t["amount"]
-    
-    # เรียงลำดับหมวดหมู่ที่จ่ายเยอะสุด 3 อันดับ
-    top_expenses = sorted(expense_cats.items(), key=lambda x: x[1], reverse=True)[:5]
+        cat = t["category"]
+        if cat not in category_summary:
+            category_summary[cat] = {"amount": 0, "type": t["type"]}
+        category_summary[cat]["amount"] += t["amount"]
 
     return render_template("index.html", 
                            transactions=reversed(transactions), 
                            income=total_income, expense=total_expense, balance=balance,
                            settings=settings, savings=savings, salary_preset=salary_preset,
-                           top_expenses=top_expenses)
+                           category_summary=category_summary)
 
 @app.route("/add", methods=["POST"])
 def add_transaction():
     data = load_data()
     try: amount = float(request.form.get("amount"))
     except: amount = 0.0
+    
     new_data = {
         "id": str(uuid.uuid4()),
         "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -74,7 +74,6 @@ def add_transaction():
     save_data(data)
     return redirect(url_for("index"))
 
-# --- NEW: Edit Transaction ---
 @app.route("/edit_transaction", methods=["POST"])
 def edit_transaction():
     t_id = request.form.get("id")
@@ -87,22 +86,28 @@ def edit_transaction():
             t["type"] = request.form.get("type")
             t["category"] = request.form.get("category")
             t["note"] = request.form.get("note")
-            # ไม่แก้วันที่ เพื่อให้คงลำดับเดิม
+            # Update date to now or keep original? Let's keep original for record but you can change it if needed
             break
             
     save_data(data)
     return redirect(url_for("index"))
 
-# --- NEW: Clear Month ---
 @app.route("/reset_month", methods=["POST"])
 def reset_month():
-    # ลบเฉพาะ Transactions รายรับรายจ่ายทั่วไป แต่เก็บ Settings และ Savings ไว้
+    # Clear only transactions, keep savings and settings
     data = load_data()
-    # เก็บ Log การออมไว้ไหม? ถ้าไม่ซีเรียส ลบหมดเลยสะอาดดีสำหรับขึ้นเดือนใหม่
-    data["transactions"] = [] 
+    data["transactions"] = []
     save_data(data)
     return redirect(url_for("index"))
 
+@app.route("/delete/<string:t_id>")
+def delete_transaction(t_id):
+    data = load_data()
+    data["transactions"] = [t for t in data["transactions"] if t.get("id") != t_id]
+    save_data(data)
+    return redirect(url_for("index"))
+
+# ... (Saving & Salary routes remain similar) ...
 @app.route("/save_salary_preset", methods=["POST"])
 def save_salary_preset():
     preset = request.json
@@ -137,7 +142,6 @@ def update_saving():
     action = request.form.get("action") 
     try: amount = float(request.form.get("amount"))
     except: amount = 0.0
-    
     if amount <= 0: return redirect(url_for("index"))
 
     data = load_data()
@@ -166,14 +170,6 @@ def update_saving():
                         "note": f"แคะกระปุก: {goal['name']}"
                     })
             break
-            
-    save_data(data)
-    return redirect(url_for("index"))
-
-@app.route("/delete/<string:t_id>")
-def delete_transaction(t_id):
-    data = load_data()
-    data["transactions"] = [t for t in data["transactions"] if t.get("id") != t_id]
     save_data(data)
     return redirect(url_for("index"))
 
