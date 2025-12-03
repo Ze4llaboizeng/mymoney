@@ -1,9 +1,48 @@
+// === HAPTIC FEEDBACK & UX JAZZ ===
+function vibrate(ms = 10) {
+    if (navigator.vibrate) navigator.vibrate(ms);
+}
+
+// Add vibration to all specific buttons
+document.querySelectorAll('.haptic-btn').forEach(btn => {
+    btn.addEventListener('click', () => vibrate(40));
+});
+
+// Custom Toast Notification (Instead of Alert)
+function showToast(message, icon = "bi-check-circle-fill") {
+    const container = document.getElementById('kuromi-toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'k-toast';
+    toast.innerHTML = `<i class="bi ${icon} text-warning"></i> <span>${message}</span>`;
+    container.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Celebration Confetti
+function celebrate() {
+    vibrate([50, 50, 50]);
+    if(typeof confetti !== 'undefined') {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#9c27b0', '#e91e63', '#000000']
+        });
+    }
+}
+
 // === FIXED NAV LOGIC ===
 const navBtns = document.querySelectorAll('.nav-btn');
 const tabPanes = document.querySelectorAll('.tab-pane');
 navBtns.forEach(btn => {
     btn.addEventListener('click', function(e) {
         e.preventDefault();
+        vibrate(20); // Light tap on nav
         navBtns.forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         tabPanes.forEach(pane => pane.classList.remove('show', 'active'));
@@ -13,7 +52,7 @@ navBtns.forEach(btn => {
     });
 });
 
-// === WORTHINESS LOGIC (UPDATED WITH RESEARCH REFS) ===
+// === WORTHINESS LOGIC ===
 if(document.getElementById('w_hourly')) {
     document.getElementById('w_hourly').addEventListener('input', function() { document.getElementById('hidden_wage').value = this.value; });
     document.getElementById('hidden_wage').value = document.getElementById('w_hourly').value;
@@ -23,60 +62,50 @@ function calcWorth() {
     let price = parseFloat(document.getElementById('w_price').value) || 0;
     let hourly = parseFloat(document.getElementById('w_hourly').value) || 0;
     
-    if(hourly <= 0) { alert("กรุณาระบุ 'ค่าแรงต่อชั่วโมง' ก่อนคำนวณครับ"); return; }
+    if(hourly <= 0) { showToast("ระบุค่าแรงก่อนนะ!", "bi-exclamation-circle-fill"); return; }
     if(price <= 0) return;
 
+    vibrate(30);
     let hours = price / hourly;
-    let days = hours / 8; // Assuming 8hr work day
+    let days = hours / 8; 
 
-    // Update UI Numbers
     document.getElementById('res_hours').innerText = hours.toFixed(1);
     document.getElementById('w_result').classList.remove('d-none');
     
-    // Logic based on Time Cost & 50/30/20 Rule & 48-Hour Rule
     let badge = document.getElementById('w_badge');
     let title = document.getElementById('w_verdict_title');
     let desc = document.getElementById('w_verdict_desc');
     let ref = document.getElementById('w_ref_text');
 
     if (hours < 4) {
-        // Tier 1: Small Joy
         badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-success px-3 py-2 shadow";
         badge.innerText = "BUY IT";
-        title.innerText = "🥰 ความสุขเล็กๆ";
-        title.className = "fw-bold text-success";
+        title.innerText = "🥰 ความสุขเล็กๆ"; title.className = "fw-bold text-success";
         desc.innerText = `ใช้เวลาทำงานแค่ ${hours.toFixed(1)} ชม. ถือว่าน้อยมาก ถ้าช่วยให้มีแรงทำงานต่อก็จัดเลย!`;
         ref.innerText = "Ref: Micro-spending for mental health boost.";
+        celebrate(); // Small purchase is a win!
     } else if (hours < 24) {
-        // Tier 2: 1-3 Days work
         badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3 py-2 shadow";
         badge.innerText = "THINK";
-        title.innerText = "🤔 คิดนิดนึงนะ";
-        title.className = "fw-bold text-warning";
+        title.innerText = "🤔 คิดนิดนึงนะ"; title.className = "fw-bold text-warning";
         desc.innerText = `ต้องแลกด้วยงานประมาณ ${days.toFixed(1)} วัน ลองถามตัวเองว่า 'จำเป็น' หรือแค่ 'อยากได้'?`;
-        ref.innerText = "Ref: Opportunity Cost - เงินนี้เอาไปทำอย่างอื่นได้ไหม?";
+        ref.innerText = "Ref: Opportunity Cost";
     } else if (hours < 80) {
-        // Tier 3: 1-2 Weeks (Apply 48-Hour Rule)
         badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3 py-2 shadow";
         badge.innerText = "WAIT 48h";
-        title.innerText = "⏳ กฎ 48 ชั่วโมง";
-        title.className = "fw-bold text-warning";
+        title.innerText = "⏳ กฎ 48 ชั่วโมง"; title.className = "fw-bold text-warning";
         desc.innerText = `ของชิ้นนี้ใช้เวลาหาเงินมา ${days.toFixed(0)} วัน! แนะนำให้ 'รอ 48 ชั่วโมง' ถ้ายังอยากได้ค่อยซื้อ`;
         ref.innerText = "Ref: The 48-Hour Rule for Impulse Buying";
     } else if (hours < 160) {
-        // Tier 4: Major Purchase (Check 30% Wants)
         badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger px-3 py-2 shadow";
         badge.innerText = "PLANNING";
-        title.innerText = "💸 ของชิ้นใหญ่";
-        title.className = "fw-bold text-danger";
+        title.innerText = "💸 ของชิ้นใหญ่"; title.className = "fw-bold text-danger";
         desc.innerText = `นี่คือการทำงานเกือบเดือน! ตรวจสอบว่าเกินงบฟุ่มเฟือย (30% ของรายได้) หรือไม่?`;
-        ref.innerText = "Ref: 50/30/20 Budgeting Rule (Wants Limit)";
+        ref.innerText = "Ref: 50/30/20 Budgeting Rule";
     } else {
-        // Tier 5: Danger Zone
         badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-dark px-3 py-2 shadow";
         badge.innerText = "DANGER";
-        title.innerText = "😱 ภาระระยะยาว";
-        title.className = "fw-bold text-dark";
+        title.innerText = "😱 ภาระระยะยาว"; title.className = "fw-bold text-dark";
         desc.innerText = `คุณต้องทำงานฟรีๆ ${days.toFixed(0)} วันเพื่อสิ่งนี้! มันคุ้มค่าเหนื่อยจริงๆ หรอ?`;
         ref.innerText = "Ref: Time Cost of Living Analysis";
     }
@@ -88,6 +117,8 @@ const dateStr = date.toLocaleDateString('th-TH');
 if(document.getElementById('currentDate')) document.getElementById('currentDate').innerText = dateStr;
 
 function capture(id, filename) {
+    vibrate(50);
+    showToast("กำลังบันทึกภาพ...", "bi-camera-fill");
     const node = document.getElementById(id);
     html2canvas(node, { scale: 2, backgroundColor: null }).then(canvas => {
         const link = document.createElement('a');
@@ -176,8 +207,19 @@ function calc() {
         if(document.getElementById('bal_pct')) document.getElementById('bal_pct').innerText = balPct.toFixed(1) + "%";
     }
 }
-function submitSalary() { calc(); if(confirm("ยืนยันยอด Net Pay เพื่อบันทึก?")) document.getElementById('salaryForm').submit(); }
-function savePreset() { const preset = {}; document.querySelectorAll('#salary-slip-node input').forEach(input => preset[input.id] = input.value); fetch('/save_salary_preset', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(preset) }).then(()=>alert("Saved!")); }
+function submitSalary() { 
+    calc(); 
+    if(confirm("ยืนยันยอด Net Pay เพื่อบันทึก?")) {
+        celebrate(); // Trigger Confetti!
+        setTimeout(() => document.getElementById('salaryForm').submit(), 800);
+    }
+}
+function savePreset() { 
+    const preset = {}; 
+    document.querySelectorAll('#salary-slip-node input').forEach(input => preset[input.id] = input.value); 
+    fetch('/save_salary_preset', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(preset) })
+    .then(() => showToast("บันทึก Template แล้ว!", "bi-save-fill")); 
+}
 
 // Init
 calc();
