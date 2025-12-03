@@ -2,18 +2,15 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#212121">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuromi Money Pro</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Chakra+Petch:wght@400;600&family=VT323&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <style>
-        /* === MAIN THEME (Kuromi Android) === */
+        /* === MAIN THEME (Kuromi) === */
         :root {
             --k-bg: #f3e5f5;
             --k-dark: #212121;
@@ -21,82 +18,38 @@
             --k-light-purple: #e1bee7;
             --k-pink: #e91e63;
         }
+        body { background-color: var(--k-bg); font-family: 'Kanit', sans-serif; padding-bottom: 100px; }
         
-        body { 
-            background-color: var(--k-bg); 
-            font-family: 'Kanit', sans-serif; 
-            padding-top: 70px; /* Space for Header */
-            padding-bottom: 90px; /* Space for Bottom Nav */
-            overscroll-behavior-y: none; /* Prevent pull-to-refresh feel on browser */
+        .nav-pills .nav-link { 
+            color: var(--k-dark); background: rgba(255,255,255,0.7); 
+            border: 2px solid transparent; margin: 0 4px; border-radius: 50px; 
+            transition: all 0.3s;
+        }
+        .nav-pills .nav-link.active { 
+            background: var(--k-dark); color: var(--k-light-purple); 
+            transform: scale(1.05); border-color: var(--k-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        /* Hide Scrollbar for App-like feel */
-        ::-webkit-scrollbar { display: none; }
-
-        /* === APP BAR (HEADER) === */
-        .app-bar {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1030;
-            background: var(--k-dark); color: white;
-            padding: 15px 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-        }
-
-        /* === BOTTOM NAVIGATION === */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 1030;
-            background: white;
-            height: 75px;
-            display: flex; justify-content: space-around; align-items: center;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-            border-top-left-radius: 25px; border-top-right-radius: 25px;
-        }
-        
-        .nav-item-app {
-            text-align: center; color: #aaa; background: none; border: none;
-            transition: 0.2s; position: relative; width: 25%;
-        }
-        .nav-item-app i { display: block; font-size: 1.5rem; margin-bottom: 2px; }
-        .nav-item-app span { font-size: 0.7rem; font-weight: 400; }
-        
-        .nav-item-app.active { color: var(--k-purple); transform: translateY(-5px); }
-        .nav-item-app.active i { font-weight: bold; }
-        .nav-item-app.active::after {
-            content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
-            width: 5px; height: 5px; background: var(--k-purple); border-radius: 50%;
-        }
-
-        /* === CARDS & UI === */
         .k-card { 
             background: white; border-radius: 20px; 
-            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.1); 
-            border: none; margin-bottom: 15px; overflow: hidden;
+            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.15); 
+            border: 1px solid rgba(156, 39, 176, 0.2);
+            margin-bottom: 15px; overflow: hidden;
         }
-
+        
         .btn-kuromi {
             background-color: var(--k-dark); color: var(--k-light-purple);
-            border-radius: 15px; border: none; font-weight: bold; padding: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border-radius: 50px; border: none; font-weight: bold;
+            transition: transform 0.2s;
         }
-        .btn-kuromi:active { transform: scale(0.98); }
+        .btn-kuromi:hover { background-color: black; color: white; transform: scale(1.02); }
 
-        /* Form Controls (Mobile Size) */
-        .form-control, .form-select {
-            border-radius: 15px; border: 1px solid #eee; background: #f9f9f9;
-            padding: 12px; font-size: 1rem;
-        }
-        .form-control:focus, .form-select:focus {
-            box-shadow: none; border-color: var(--k-purple); background: white;
-        }
-
-        /* === RETRO SLIP === */
-        .retro-wrapper { font-family: 'Chakra Petch', sans-serif; overflow-x: auto; }
+        /* === RETRO RECEIPT STYLE === */
+        .retro-wrapper { font-family: 'Chakra Petch', sans-serif; }
         .receipt-paper {
-            background-color: #fcfcfc; padding: 20px 15px; position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: #fcfcfc; padding: 30px 25px; position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); margin-top: 15px;
             font-family: 'VT323', monospace; color: #333;
-            max-width: 100%; margin: 10px auto;
         }
         .jagged-top, .jagged-bottom {
             position: absolute; left: 0; width: 100%; height: 10px;
@@ -105,307 +58,314 @@
         .jagged-top { top: -10px; transform: rotate(180deg); }
         .jagged-bottom { bottom: -10px; }
         
-        .retro-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 1.1rem; border-bottom: 1px dotted #ccc; }
-        .retro-brand { font-size: 1.8rem; border-bottom: 3px double black; display: inline-block; margin-bottom: 10px; }
+        .retro-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 1.25rem; border-bottom: 1px dotted #ccc; }
+        .retro-brand { font-size: 2.2rem; border-bottom: 3px double black; display: inline-block; margin-bottom: 15px; }
 
         /* === PIGGY BANK === */
         .piggy-jar {
             background: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
-            border: 4px solid #880e4f; border-radius: 30px; padding: 20px;
-            position: relative; margin-bottom: 20px;
+            border: 4px solid #880e4f; border-radius: 40px; padding: 25px;
+            position: relative; margin-bottom: 25px;
             box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3);
         }
         .piggy-delete {
-            position: absolute; top: 10px; right: 10px;
-            background: white; color: #880e4f; border-radius: 50%; width: 30px; height: 30px;
+            position: absolute; top: 15px; right: 15px;
+            background: white; color: #880e4f; border-radius: 50%; width: 35px; height: 35px;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.2s;
         }
+        .piggy-delete:hover { transform: scale(1.1); background: #880e4f; color: white; }
+
+        /* === FLOATING ACTIONS === */
+        .float-menu { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
     </style>
 </head>
 <body>
-
-    <div class="app-bar">
-        <div class="d-flex align-items-center gap-2">
-            <div class="bg-white text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                <i class="bi bi-skull-fill"></i>
-            </div>
+    <div class="container py-3" style="max-width: 500px;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 px-2">
             <div>
-                <h6 class="m-0 fw-bold" style="line-height: 1;">Kuromi Pro</h6>
-                <small style="font-size: 0.7rem; opacity: 0.7;">My Wallet</small>
+                <h4 class="fw-bold m-0" style="color: var(--k-dark);"><i class="bi bi-skull-fill"></i> Kuromi Pro</h4>
+                <small class="text-muted" style="font-size: 0.8rem;">จัดการเงินแบบตัวแม่</small>
             </div>
+            <button class="btn btn-sm btn-outline-danger rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#newMonthModal">
+                <i class="bi bi-arrow-repeat"></i> เริ่มเดือนใหม่
+            </button>
         </div>
-        <button class="btn btn-sm btn-outline-light rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#newMonthModal" style="border: 1px solid rgba(255,255,255,0.3);">
-            <i class="bi bi-calendar-x"></i> Clear
-        </button>
-    </div>
 
-    <div class="container px-3">
-        <div class="tab-content" id="mainTabContent">
+        <ul class="nav nav-pills nav-fill mb-4" id="pills-tab" role="tablist">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#content-dash"><i class="bi bi-wallet2"></i> ภาพรวม</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#content-salary"><i class="bi bi-receipt"></i> สลิปเงินเดือน</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#content-saving"><i class="bi bi-piggy-bank"></i> ออมสิน</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#content-worth"><i class="bi bi-calculator"></i> คุ้มไหม</button></li>
+        </ul>
+
+        <div class="tab-content">
             
-            <div class="tab-pane fade show active" id="content-dash" role="tabpanel">
-                <div class="k-card text-center p-4 text-white position-relative mt-2" 
-                     style="background: linear-gradient(135deg, #212121 0%, #311b92 100%); min-height: 180px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="tab-pane fade show active" id="content-dash">
+                <div class="k-card text-center p-4 text-white position-relative" 
+                     style="background: linear-gradient(135deg, #212121 0%, #311b92 100%); border: none;">
                     <div style="position: absolute; top: 10px; right: 10px; opacity: 0.2;">
                         <i class="bi bi-stars fs-1"></i>
                     </div>
-                    <small class="text-white-50 text-uppercase letter-spacing-2">Balance</small>
-                    <h1 class="display-4 fw-bold mb-0">฿{{ "{:,.2f}".format(balance) }}</h1>
-                    <div class="row mt-3 g-0">
-                        <div class="col-6 border-end border-secondary">
-                            <small class="text-success d-block">Income</small>
-                            <span class="fw-bold">{{ "{:,.0f}".format(income) }}</span>
-                        </div>
-                        <div class="col-6">
-                            <small class="text-danger d-block">Expense</small>
-                            <span class="fw-bold">{{ "{:,.0f}".format(expense) }}</span>
-                        </div>
+                    <small class="text-white-50 text-uppercase letter-spacing-2">Net Balance</small>
+                    <h1 class="display-3 fw-bold mb-0">฿{{ "{:,.2f}".format(balance) }}</h1>
+                    <div class="d-flex justify-content-center gap-4 mt-3">
+                        <small class="text-success"><i class="bi bi-arrow-down-circle-fill"></i> รับ {{ "{:,.0f}".format(income) }}</small>
+                        <small class="text-danger"><i class="bi bi-arrow-up-circle-fill"></i> จ่าย {{ "{:,.0f}".format(expense) }}</small>
                     </div>
                 </div>
 
                 <div class="k-card p-3">
                     <form action="/add" method="POST">
-                        <div class="d-flex gap-2 mb-2">
-                            <select name="type" class="form-select fw-bold flex-shrink-0" style="width: 40%;" id="typeSelect" onchange="toggleCategories('categorySelect')">
-                                <option value="expense">🔥 จ่าย</option>
-                                <option value="income">✨ รับ</option>
-                            </select>
-                            <select name="category" class="form-select flex-grow-1" id="categorySelect"></select>
+                        <div class="row g-2 mb-2">
+                            <div class="col-5">
+                                <select name="type" class="form-select border-2 border-dark rounded-pill fw-bold" id="typeSelect" onchange="toggleCategories('categorySelect')">
+                                    <option value="expense">🔥 จ่าย</option>
+                                    <option value="income">✨ รับ</option>
+                                </select>
+                            </div>
+                            <div class="col-7">
+                                <select name="category" class="form-select border-2 border-dark rounded-pill" id="categorySelect"></select>
+                            </div>
                         </div>
                         <div class="input-group mb-2">
-                            <span class="input-group-text bg-white border-end-0 rounded-start-4 ps-3 text-muted">฿</span>
-                            <input type="number" step="0.01" name="amount" class="form-control border-start-0 fw-bold fs-4" placeholder="0.00" required>
+                            <span class="input-group-text bg-dark text-white border-dark rounded-start-pill ps-3">฿</span>
+                            <input type="number" step="0.01" name="amount" class="form-control border-2 border-dark fw-bold rounded-end-pill" placeholder="0.00" required>
                         </div>
-                        <input type="text" name="note" class="form-control mb-2 text-center" placeholder="รายละเอียด (ถ้ามี)">
-                        <button type="submit" class="btn btn-kuromi w-100">
-                            <i class="bi bi-plus-lg"></i> บันทึก
-                        </button>
+                        <input type="text" name="note" class="form-control border-2 border-dark rounded-pill mb-2 text-center" placeholder="รายการอะไร...">
+                        <button type="submit" class="btn btn-kuromi w-100 shadow-sm">บันทึกรายการ</button>
                     </form>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-3 mb-2 px-1">
-                    <h6 class="fw-bold m-0 text-muted">Transactions</h6>
-                    <button class="btn btn-sm btn-light text-dark rounded-pill border shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#recapModal">
-                        <i class="bi bi-receipt"></i> สรุป
+                <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+                    <h6 class="fw-bold m-0 ps-2">ล่าสุด</h6>
+                    <button class="btn btn-sm btn-dark rounded-pill" data-bs-toggle="modal" data-bs-target="#recapModal">
+                        <i class="bi bi-receipt-cutoff"></i> สรุปเดือนนี้
                     </button>
                 </div>
 
-                {% if transactions %}
-                    {% for t in transactions %}
-                    <div class="k-card p-3 d-flex justify-content-between align-items-center" style="margin-bottom: 10px;">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white" 
-                                 style="width: 40px; height: 40px; background: {{ '#e91e63' if t.type == 'expense' else '#4caf50' }};">
-                                <i class="bi {{ 'bi-bag' if t.type == 'expense' else 'bi-coin' }}"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold text-truncate" style="max-width: 140px;">{{ t.note if t.note else t.category }}</div>
-                                <small class="text-muted" style="font-size: 0.7rem;">{{ t.date }} • {{ t.category }}</small>
-                            </div>
-                        </div>
-                        <div class="text-end">
-                            <div class="{{ 'text-success' if t.type == 'income' else 'text-danger' }} fw-bold">
-                                {{ '+' if t.type == 'income' else '-' }}{{ "{:,.2f}".format(t.amount) }}
-                            </div>
-                            <small class="text-muted text-decoration-underline" style="cursor: pointer; font-size: 0.7rem;" onclick='openEditModal({{ t | tojson }})'>แก้ไข</small>
-                            <a href="/delete/{{ t.id }}" class="text-danger ms-2" onclick="return confirm('ลบ?')" style="font-size: 0.7rem;"><i class="bi bi-trash"></i></a>
+                {% for t in transactions %}
+                <div class="k-card p-2 px-3 d-flex justify-content-between align-items-center mb-2" style="border-left: 5px solid {{ '#e91e63' if t.type == 'expense' else '#4caf50' }};">
+                    <div>
+                        <div class="fw-bold">{{ t.note }}</div>
+                        <small class="text-muted" style="font-size: 0.75rem;">{{ t.date }} <span class="badge bg-light text-dark border ms-1">{{ t.category }}</span></small>
+                    </div>
+                    <div class="text-end d-flex align-items-center gap-2">
+                        <span class="{{ 'text-success' if t.type == 'income' else 'text-danger' }} fw-bold fs-5">
+                            {{ '+' if t.type == 'income' else '-' }}{{ "{:,.2f}".format(t.amount) }}
+                        </span>
+                        
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-link text-secondary p-0" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                                <li><a class="dropdown-item small" href="#" onclick='openEditModal({{ t | tojson }})'><i class="bi bi-pencil me-2"></i>แก้ไข</a></li>
+                                <li><a class="dropdown-item small text-danger" href="/delete/{{ t.id }}" onclick="return confirm('ลบรายการนี้?')"><i class="bi bi-trash me-2"></i>ลบ</a></li>
+                            </ul>
                         </div>
                     </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center text-muted py-5 opacity-50">
-                        <i class="bi bi-inbox fs-1"></i><br>ยังไม่มีรายการ
-                    </div>
-                {% endif %}
+                </div>
+                {% endfor %}
+                <div style="height: 50px;"></div>
             </div>
 
-            <div class="tab-pane fade" id="content-salary" role="tabpanel">
-                <div class="k-card p-2 text-center bg-dark text-white mb-3">
-                    <h5 class="m-0"><i class="bi bi-receipt"></i> สลิปเงินเดือน</h5>
+            <div class="tab-pane fade retro-wrapper" id="content-salary">
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <button class="btn btn-sm btn-dark rounded-pill px-4" onclick="savePreset()"><i class="bi bi-floppy"></i> จำค่าเดิม</button>
+                    <button class="btn btn-sm btn-warning rounded-pill px-4" onclick="capture('salary-slip-node', 'SalarySlip')"><i class="bi bi-camera"></i> เซฟรูป</button>
                 </div>
                 
-                <div class="receipt-paper mx-auto" id="salary-slip-node">
+                <div class="receipt-paper" id="salary-slip-node">
                     <div class="jagged-top"></div>
                     <div class="text-center">
-                        <div class="retro-brand">PAYROLL</div>
-                        <div class="small opacity-50 mb-3">{{ salary_preset.get('month_str', 'THIS MONTH') }}</div>
+                        <div class="retro-brand"><i class="bi bi-stars"></i> PAYROLL</div>
+                        <div class="small opacity-50 mb-3 text-uppercase">Official Slip / {{ salary_preset.get('month_str', 'THIS MONTH') }}</div>
                     </div>
 
                     <div class="fw-bold text-decoration-underline mb-2">INCOME</div>
                     <div class="retro-row"><span>Base Salary</span> <input type="text" id="s_salary" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_salary', '') }}"></div>
                     <div class="retro-row"><span>Allowance</span> <input type="text" id="s_col" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_col', '') }}"></div>
                     <div class="retro-row"><span>Position</span> <input type="text" id="s_level" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_level', '') }}"></div>
+                    <div class="retro-row"><span>Diligence</span> <input type="text" id="s_diligence" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_diligence', '') }}"></div>
                     <div class="retro-row"><span>Other</span> <input type="text" id="s_other" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('s_other', '') }}"></div>
 
-                    <div class="fw-bold text-decoration-underline mb-2 mt-3">OT Calculation</div>
-                    <div class="retro-row text-muted small"><span>Rate/Hr</span> <span id="ot_rate_display">0.00</span></div>
-                    <div class="retro-row"><span>OT 1.5 (Hr)</span> <div class="d-flex"><input type="number" id="ot_15_hr" class="retro-input hrs-input" onblur="calcSalary()" value="{{ salary_preset.get('ot_15_hr', '') }}"><span class="amt-text" id="ot_15_amt">0.00</span></div></div>
-                    <div class="retro-row"><span>OT 3.0 (Hr)</span> <div class="d-flex"><input type="number" id="ot_30_hr" class="retro-input hrs-input" onblur="calcSalary()" value="{{ salary_preset.get('ot_30_hr', '') }}"><span class="amt-text" id="ot_30_amt">0.00</span></div></div>
+                    <div class="fw-bold text-decoration-underline mb-2 mt-3">OVERTIME</div>
+                    <div class="retro-row text-muted" style="font-size: 0.9rem;"><span>Rate/Hr</span> <span id="ot_rate_display">0.00</span></div>
+                    <div class="retro-row"><span>OT x1.5 (Hr)</span> <div class="d-flex"><input type="text" id="ot_15_hr" class="retro-input hrs-input" onblur="calcSalary()" value="{{ salary_preset.get('ot_15_hr', '') }}"><span class="amt-text" id="ot_15_amt">0.00</span></div></div>
+                    <div class="retro-row"><span>OT x3.0 (Hr)</span> <div class="d-flex"><input type="text" id="ot_30_hr" class="retro-input hrs-input" onblur="calcSalary()" value="{{ salary_preset.get('ot_30_hr', '') }}"><span class="amt-text" id="ot_30_amt">0.00</span></div></div>
 
                     <div class="retro-row fw-bold mt-2 pt-1 border-top border-dark border-dashed">
-                        <span>GROSS</span><span class="amt-text" id="gross_income">0.00</span>
+                        <span>GROSS TOTAL</span><span class="amt-text" id="gross_income">0.00</span>
                     </div>
 
                     <div class="fw-bold text-decoration-underline mb-2 mt-3">DEDUCTION</div>
-                    <div class="retro-row"><span>Tax/SSO</span> <input type="text" id="d_tax" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_tax', '') }}"></div>
+                    <div class="retro-row"><span>Tax</span> <input type="text" id="d_tax" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_tax', '') }}"></div>
+                    <div class="retro-row"><span>Social Sec.</span> <input type="text" id="d_sso" class="retro-input" onblur="calcSalary()" value="{{ salary_preset.get('d_sso', '') }}"></div>
 
                     <div style="border-bottom: 3px double black; margin: 20px 0;"></div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold fs-4">NET</span>
+                        <span class="fw-bold fs-4">NET PAY</span>
                         <span class="vt-font fw-bold fs-1" id="net_pay_display">0.00</span>
                     </div>
+                    <div class="text-center mt-3 barcode">|| ||| | |||| || ||</div>
                     <div class="jagged-bottom"></div>
                 </div>
-
-                <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-kuromi" onclick="submitSalary()">
-                        <i class="bi bi-download"></i> บันทึกเข้าระบบ
-                    </button>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-light border flex-grow-1" onclick="savePreset()">จำค่า</button>
-                        <button class="btn btn-warning flex-grow-1" onclick="capture('salary-slip-node', 'SalarySlip')">เซฟรูป</button>
-                    </div>
+                
+                 <div class="mt-4 px-3">
+                     <form action="/add" method="POST" id="salaryForm">
+                        <input type="hidden" name="type" value="income">
+                        <input type="hidden" name="category" value="เงินเดือน">
+                        <input type="hidden" name="note" value="เงินเดือนสุทธิ">
+                        <input type="hidden" name="amount" id="final_salary_amount">
+                        <button type="button" onclick="submitSalary()" class="btn btn-kuromi w-100 py-2">
+                            <i class="bi bi-check-circle"></i> บันทึกเข้า Dashboard
+                        </button>
+                    </form>
                 </div>
-                <form action="/add" method="POST" id="salaryForm" class="d-none">
-                    <input type="hidden" name="type" value="income">
-                    <input type="hidden" name="category" value="เงินเดือน">
-                    <input type="hidden" name="note" value="เงินเดือนสุทธิ">
-                    <input type="hidden" name="amount" id="final_salary_amount">
-                </form>
             </div>
 
-            <div class="tab-pane fade" id="content-saving" role="tabpanel">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold m-0 text-dark">กระปุกหมู</h5>
-                    <button class="btn btn-sm btn-dark rounded-pill px-3" type="button" data-bs-toggle="collapse" data-bs-target="#addGoalForm">
-                        <i class="bi bi-plus-lg"></i> เพิ่ม
+            <div class="tab-pane fade" id="content-saving">
+                <div class="d-grid mb-3">
+                    <button class="btn btn-outline-danger border-2 rounded-pill fw-bold py-2" data-bs-toggle="collapse" data-bs-target="#addGoalForm">
+                        <i class="bi bi-plus-circle-fill"></i> สร้างกระปุกใหม่
                     </button>
                 </div>
                 
                 <div class="collapse mb-3" id="addGoalForm">
-                    <div class="k-card p-3 bg-light border-0">
+                    <div class="k-card p-4">
                         <form action="/add_saving_goal" method="POST">
-                            <input type="text" name="name" class="form-control mb-2" placeholder="ชื่อกระปุก..." required>
-                            <input type="number" name="target" class="form-control mb-2" placeholder="เป้าหมาย (บาท)" required>
-                            <button type="submit" class="btn btn-danger w-100 rounded-pill">สร้าง</button>
+                            <h6 class="fw-bold">🎯 เป้าหมายใหม่</h6>
+                            <input type="text" name="name" class="form-control border-dark rounded-pill mb-2" placeholder="ชื่อกระปุก (เช่น กระเป๋า)" required>
+                            <input type="number" name="target" class="form-control border-dark rounded-pill mb-2" placeholder="ยอดเป้าหมาย (บาท)" required>
+                            <button type="submit" class="btn btn-danger rounded-pill w-100">สร้างเลย</button>
                         </form>
                     </div>
                 </div>
 
                 {% for goal in savings %}
-                <div class="k-card p-0 overflow-hidden">
-                    <div class="piggy-jar m-0 rounded-0 border-0 border-bottom">
-                        <a href="/delete_saving/{{ goal.id }}" class="piggy-delete text-decoration-none" onclick="return confirm('ทุบกระปุก?')"><i class="bi bi-x-lg"></i></a>
-                        <div class="d-flex align-items-center gap-3 text-white">
-                            <i class="bi bi-piggy-bank-fill display-5"></i>
-                            <div>
-                                <h5 class="fw-bold m-0">{{ goal.name }}</h5>
-                                <small class="opacity-75">เป้า: {{ "{:,.0f}".format(goal.target) }}</small>
+                <div class="position-relative">
+                    <div class="piggy-jar" id="piggy-{{ goal.id }}">
+                        <a href="/delete_saving/{{ goal.id }}" class="piggy-delete" onclick="return confirm('จะทุบกระปุกทิ้งเลยหรอ?')"><i class="bi bi-trash-fill"></i></a>
+                        <div class="text-center mb-2 text-white">
+                            <i class="bi bi-piggy-bank-fill display-4"></i>
+                            <h4 class="fw-bold m-0 mt-2">{{ goal.name }}</h4>
+                            <div class="badge bg-white text-danger rounded-pill px-3 mt-1">
+                                {{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }}
                             </div>
                         </div>
                         {% set pct = (goal.current / goal.target * 100) | round(1) %}
-                        <div class="progress mt-3 bg-white bg-opacity-25" style="height: 10px; border-radius: 5px;">
+                        <div class="progress border border-2 border-white" style="height: 20px; border-radius: 10px; background: rgba(255,255,255,0.3);">
                             <div class="progress-bar bg-white" style="width: {{ pct }}%;"></div>
                         </div>
-                        <div class="text-end text-white mt-1 fw-bold">{{ "{:,.0f}".format(goal.current) }} ({{ pct }}%)</div>
+                        <div class="text-end text-white small mt-1">{{ pct }}%</div>
                     </div>
-                    <form action="/update_saving" method="POST" class="p-3 d-flex gap-2">
+                    
+                    <form action="/update_saving" method="POST" class="d-flex gap-2 align-items-center bg-white p-2 rounded-pill shadow-sm mb-4 border border-danger">
                         <input type="hidden" name="goal_id" value="{{ goal.id }}">
-                        <input type="number" name="amount" class="form-control" placeholder="ระบุยอด..." required>
-                        <button type="submit" name="action" value="deposit" class="btn btn-dark rounded-circle" style="width:40px; height:40px;"><i class="bi bi-plus"></i></button>
-                        <button type="submit" name="action" value="withdraw" class="btn btn-outline-danger rounded-circle" style="width:40px; height:40px;"><i class="bi bi-dash"></i></button>
+                        <input type="number" name="amount" class="form-control border-0 bg-transparent fw-bold" placeholder="จำนวนเงิน..." required>
+                        <button type="submit" name="action" value="deposit" class="btn btn-danger rounded-circle"><i class="bi bi-plus-lg"></i></button>
+                        <button type="submit" name="action" value="withdraw" class="btn btn-outline-danger rounded-circle border-0"><i class="bi bi-dash-lg"></i></button>
                     </form>
                 </div>
                 {% else %}
-                <div class="text-center py-5 opacity-50">
-                    <i class="bi bi-piggy-bank fs-1"></i><br>สร้างกระปุกแรกกันเถอะ
+                <div class="text-center py-5 text-muted">
+                    <p>ยังไม่มีกระปุกออมสิน</p>
                 </div>
                 {% endfor %}
             </div>
 
-            <div class="tab-pane fade" id="content-worth" role="tabpanel">
+            <div class="tab-pane fade" id="content-worth">
                 <div class="k-card p-4 text-center">
-                    <div class="mb-4">
-                        <i class="bi bi-magic fs-1 text-purple"></i>
-                        <h4 class="fw-bold">คุ้มไหม?</h4>
+                    <h3 class="fw-bold mb-3"><i class="bi bi-magic"></i> กระจกวิเศษ</h3>
+                    <p class="text-muted small">บอกข้าเถิด... สิ่งนี้คุ้มค่าที่จะซื้อไหม?</p>
+                    
+                    <div class="mb-3 text-start">
+                        <label class="fw-bold small ms-2">ของที่อยากได้</label>
+                        <input type="text" id="w_name" class="form-control border-2 border-dark rounded-pill" placeholder="เช่น iPhone 15">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="fw-bold small ms-2">ราคา (บาท)</label>
+                        <input type="number" id="w_price" class="form-control border-2 border-dark fw-bold display-1 text-center py-3" style="font-size: 2rem; border-radius: 20px;" placeholder="0.00">
                     </div>
 
-                    <div class="form-floating mb-2">
-                        <input type="text" id="w_name" class="form-control" placeholder="ของ">
-                        <label>อยากได้อะไร</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="number" id="w_price" class="form-control fw-bold" placeholder="ราคา">
-                        <label>ราคา (บาท)</label>
-                    </div>
-
-                    <div class="text-end mb-3">
-                        <button class="btn btn-sm btn-link text-muted text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#wageConfig">
-                            <i class="bi bi-gear"></i> ตั้งค่าแรง
-                        </button>
-                    </div>
-                    <div class="collapse mb-3" id="wageConfig">
-                        <div class="bg-light p-3 rounded-4">
-                             <label class="small text-muted">ค่าแรง/ชม.</label>
-                             <div class="d-flex gap-2">
-                                 <input type="number" id="w_hourly" class="form-control" value="{{ settings.hourly_wage }}">
-                                 <button class="btn btn-dark" onclick="saveWage()">Save</button>
-                             </div>
-                             <form action="/update_settings" method="POST" id="wageForm" class="d-none">
-                                <input type="hidden" name="hourly_wage" id="hidden_wage">
-                            </form>
+                    <div class="accordion mb-3" id="accSettings">
+                        <div class="accordion-item border-0 bg-transparent">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed py-2 rounded-pill bg-light small shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#colSet">
+                                    <i class="bi bi-gear-fill me-2"></i> ตั้งค่าฐานเงินเดือน
+                                </button>
+                            </h2>
+                            <div id="colSet" class="accordion-collapse collapse" data-bs-parent="#accSettings">
+                                <div class="accordion-body p-2">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="small">ค่าแรง/ชม.</label>
+                                            <input type="number" id="w_hourly" class="form-control form-control-sm text-end" value="{{ settings.hourly_wage }}">
+                                        </div>
+                                        <div class="col-6 pt-4">
+                                            <form action="/update_settings" method="POST" id="wageForm">
+                                                <input type="hidden" name="hourly_wage" id="hidden_wage">
+                                                <button type="submit" class="btn btn-sm btn-dark w-100 rounded-pill">บันทึกค่า</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <button onclick="calcWorth()" class="btn btn-kuromi w-100 py-3 rounded-pill shadow">
-                        🔮 ทำนายดวงการเงิน
+                    <button onclick="calcWorth()" class="btn btn-kuromi w-100 rounded-pill fw-bold py-3 shadow">
+                        🔮 ทำนายผล
                     </button>
 
-                    <div id="w_result" class="d-none mt-4 border-top pt-4">
-                        <h1 class="fw-bold display-3" id="res_hours" style="color: var(--k-dark);">0</h1>
-                        <span class="text-muted">ชั่วโมงทำงาน</span>
-                        <div class="mt-2 fw-bold fs-5 text-purple" id="w_verdict"></div>
-                        <div id="res_monthly_box" class="alert alert-danger mt-3 d-none border-0 small">
-                            😱 หายไป <span id="res_percent" class="fw-bold">0</span>% ของเงินเดือน!
+                    <div id="w_result" class="d-none mt-4 p-3 rounded-4 border border-2 border-dark bg-white">
+                        <div class="small text-muted">ต้องทำงานแลกมาด้วย</div>
+                        <div class="display-1 fw-bold text-dark" id="res_hours">0</div>
+                        <div class="fw-bold">ชั่วโมงทำงาน</div>
+                        <div class="text-muted small mt-1" id="res_days"></div>
+                        <hr>
+                        <div class="fw-bold fs-5" id="w_verdict" style="color: var(--k-purple);"></div>
+                        
+                        <div id="res_monthly_box" class="alert alert-danger mt-3 d-none rounded-3">
+                            <i class="bi bi-exclamation-triangle-fill"></i> หายไป <span id="res_percent" class="fw-bold">0</span>% ของเงินเดือน!
                         </div>
                     </div>
                 </div>
             </div>
 
-        </div> </div> <nav class="bottom-nav">
-        <button class="nav-item-app active" data-bs-target="#content-dash" onclick="switchTab(this)">
-            <i class="bi bi-wallet2"></i>
-            <span>หน้าแรก</span>
-        </button>
-        <button class="nav-item-app" data-bs-target="#content-salary" onclick="switchTab(this)">
-            <i class="bi bi-receipt"></i>
-            <span>สลิป</span>
-        </button>
-        <button class="nav-item-app" data-bs-target="#content-saving" onclick="switchTab(this)">
-            <i class="bi bi-piggy-bank"></i>
-            <span>ออมเงิน</span>
-        </button>
-        <button class="nav-item-app" data-bs-target="#content-worth" onclick="switchTab(this)">
-            <i class="bi bi-calculator"></i>
-            <span>คุ้มไหม</span>
-        </button>
-    </nav>
+        </div> 
+    </div>
 
     <div class="modal fade" id="editModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 rounded-4 shadow">
-                <div class="modal-body p-4">
-                    <h5 class="fw-bold mb-3">แก้ไขรายการ</h5>
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square"></i> แก้ไขรายการ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
                     <form action="/edit_transaction" method="POST">
                         <input type="hidden" name="id" id="edit_id">
-                        <select name="type" id="edit_type" class="form-select mb-2" onchange="toggleCategories('edit_category')">
-                            <option value="expense">จ่าย</option>
-                            <option value="income">รับ</option>
-                        </select>
-                        <select name="category" id="edit_category" class="form-select mb-2"></select>
-                        <input type="number" step="0.01" name="amount" id="edit_amount" class="form-control mb-2 fw-bold" required>
-                        <input type="text" name="note" id="edit_note" class="form-control mb-3">
-                        <button type="submit" class="btn btn-kuromi w-100">บันทึก</button>
+                        <div class="mb-2">
+                            <label class="small fw-bold">ประเภท</label>
+                            <select name="type" id="edit_type" class="form-select rounded-pill" onchange="toggleCategories('edit_category')">
+                                <option value="expense">จ่าย</option>
+                                <option value="income">รับ</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="small fw-bold">หมวดหมู่</label>
+                            <select name="category" id="edit_category" class="form-select rounded-pill"></select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="small fw-bold">จำนวนเงิน</label>
+                            <input type="number" step="0.01" name="amount" id="edit_amount" class="form-control fw-bold rounded-pill" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold">บันทึกช่วยจำ</label>
+                            <input type="text" name="note" id="edit_note" class="form-control rounded-pill">
+                        </div>
+                        <button type="submit" class="btn btn-kuromi w-100">บันทึกการแก้ไข</button>
                     </form>
                 </div>
             </div>
@@ -415,14 +375,14 @@
     <div class="modal fade" id="recapModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-transparent border-0">
-                <div class="receipt-paper mx-auto" style="width: 300px;" id="monthRecapNode">
+                <div class="receipt-paper mx-auto" style="width: 320px;" id="monthRecapNode">
                     <div class="jagged-top"></div>
                     <div class="text-center mb-3">
-                        <div class="retro-brand">RECAP</div>
-                        <div class="small opacity-50">SUMMARY</div>
+                        <div class="retro-brand">MONTHLY RECAP</div>
+                        <div class="small opacity-50">SUMMARY REPORT</div>
                     </div>
                     
-                    <div class="fw-bold text-decoration-underline mb-1">EXPENSE</div>
+                    <div class="fw-bold text-decoration-underline mb-1">BREAKDOWN</div>
                     {% for cat, data in category_summary.items() %}
                     {% if data.type == 'expense' %}
                     <div class="retro-row" style="font-size: 1rem;">
@@ -431,32 +391,51 @@
                     </div>
                     {% endif %}
                     {% endfor %}
-                    
-                    <div style="border-top: 1px dashed black; margin: 10px 0;"></div>
-                    <div class="d-flex justify-content-between fw-bold">
-                        <span>NET BAL.</span>
-                        <span>{{ "{:,.2f}".format(balance) }}</span>
+
+                    <div style="border-top: 2px dashed black; margin-top: 15px; padding-top: 5px;"></div>
+                    <div class="retro-row fw-bold">
+                        <span>TOTAL EXPENSE</span>
+                        <span>{{ "{:,.2f}".format(expense) }}</span>
                     </div>
+                    <div class="retro-row fw-bold text-success">
+                        <span>TOTAL INCOME</span>
+                        <span>{{ "{:,.2f}".format(income) }}</span>
+                    </div>
+                    
+                    <div style="border-bottom: 3px double black; margin: 10px 0;"></div>
+                    <div class="text-center">
+                        <span class="d-block small">NET BALANCE</span>
+                        <span class="vt-font fw-bold fs-1">{{ "{:,.2f}".format(balance) }}</span>
+                    </div>
+                    
+                    <div class="text-center mt-3 small opacity-50">KEEP FIGHTING!</div>
                     <div class="jagged-bottom"></div>
                 </div>
                 <div class="text-center mt-3">
-                    <button class="btn btn-light rounded-pill shadow-sm" onclick="capture('monthRecapNode', 'Recap')">Save Image</button>
+                    <button class="btn btn-light fw-bold rounded-pill shadow" onclick="capture('monthRecapNode', 'Monthly_Recap')">
+                        <i class="bi bi-download"></i> Save Image
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="modal fade" id="newMonthModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 rounded-4">
-                <div class="modal-body text-center p-4">
-                    <div class="text-danger display-1 mb-2"><i class="bi bi-exclamation-circle"></i></div>
-                    <h5 class="fw-bold">ล้างข้อมูลเดือนนี้?</h5>
-                    <p class="small text-muted">รายการรับจ่ายจะหายไปหมด</p>
+                <div class="modal-header border-0 bg-danger text-white rounded-top-4">
+                    <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i> เตือนภัย!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <h4>จะขึ้นเดือนใหม่จริงๆ หรอ?</h4>
+                    <p class="text-muted">รายการ รับ/จ่าย ทั้งหมดจะหายไป<br>(แต่เงินออมกับค่าที่ตั้งไว้ยังอยู่นะ)</p>
                     <form action="/reset_month" method="POST">
-                        <button type="submit" class="btn btn-danger w-100 rounded-pill mb-2">ยืนยัน ลบเลย</button>
+                        <button type="submit" class="btn btn-danger w-100 rounded-pill fw-bold py-2">
+                            ใช่! ล้างข้อมูลเลย
+                        </button>
                     </form>
-                    <button class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button class="btn btn-link text-secondary mt-2" data-bs-dismiss="modal">ยกเลิกก่อน</button>
                 </div>
             </div>
         </div>
@@ -464,34 +443,25 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // === App Navigation Logic ===
-        function switchTab(btn) {
-            // Remove active class from all nav items
-            document.querySelectorAll('.nav-item-app').forEach(el => el.classList.remove('active'));
-            // Add active to clicked
-            btn.classList.add('active');
-            
-            // Hide all tab panes
-            document.querySelectorAll('.tab-pane').forEach(el => {
-                el.classList.remove('show', 'active');
+        // === Common & Capture ===
+        function capture(id, filename) {
+            const node = document.getElementById(id);
+            html2canvas(node, { scale: 2, backgroundColor: null }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = filename + '_' + Date.now() + '.png';
+                link.href = canvas.toDataURL();
+                link.click();
             });
-            
-            // Show target pane
-            const targetId = btn.getAttribute('data-bs-target');
-            const targetPane = document.querySelector(targetId);
-            targetPane.classList.add('active', 'show');
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
         }
 
-        // === Categories Logic ===
+        // === Category Logic ===
         const cats = { 
             expense: ["อาหาร", "เดินทาง", "ช้อปปิ้ง", "บิล/น้ำไฟ", "สุขภาพ", "อื่นๆ"], 
             income: ["เงินเดือน", "โบนัส", "ขายของ", "ผู้ใหญ่ใจดี", "อื่นๆ"] 
         };
         
         function toggleCategories(targetId, preselect=null) {
+            // Find current type (either from main form or edit form)
             let typeEl, selEl;
             if(targetId === 'categorySelect') {
                 typeEl = document.getElementById("typeSelect");
@@ -510,6 +480,8 @@
                 selEl.appendChild(opt);
             });
         }
+        
+        // Init main form
         toggleCategories('categorySelect');
 
         // === Edit Logic ===
@@ -519,26 +491,17 @@
             document.getElementById('edit_amount').value = t.amount;
             document.getElementById('edit_note').value = t.note;
             document.getElementById('edit_type').value = t.type;
+            
+            // Populate categories based on type, then select the right one
             toggleCategories('edit_category', t.category);
             editModal.show();
         }
 
-        // === Capture Logic ===
-        function capture(id, filename) {
-            const node = document.getElementById(id);
-            html2canvas(node, { scale: 2, backgroundColor: null }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = filename + '.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-
-        // === Salary Logic ===
+        // === Salary Logic (Simplified for brevity, logic same as before) ===
         function safeEval(str) { try { return new Function('return ' + str)() || 0; } catch { return 0; } }
         function getVal(id) {
             let el = document.getElementById(id); if(!el) return 0;
-            let valStr = el.value.toString();
+            let valStr = el.value;
             if(/[+\-*/]/.test(valStr)) { let res = safeEval(valStr); el.value = res; return res; }
             return parseFloat(valStr) || 0;
         }
@@ -548,7 +511,7 @@
 
         function calcSalary() {
             let salary = getVal('s_salary'); let col = getVal('s_col'); let level = getVal('s_level');
-            let other = getVal('s_other');
+            let diligence = getVal('s_diligence'); let other = getVal('s_other');
             let baseForOt = salary + col + level;
             let rate = baseForOt > 0 ? (baseForOt / 30) / 8 : 0;
             setTxt('ot_rate_display', rate);
@@ -557,38 +520,33 @@
             let amt15 = rate * 1.5 * h15; let amt30 = rate * 3.0 * h30;
             setTxt('ot_15_amt', amt15); setTxt('ot_30_amt', amt30);
             
-            let gross = baseForOt + other + amt15 + amt30;
+            let gross = baseForOt + diligence + other + amt15 + amt30;
             setTxt('gross_income', gross);
             
-            let totalDeduct = getVal('d_tax'); // Mobile simplified (Tax+SSO in one field)
+            let totalDeduct = getVal('d_tax') + getVal('d_sso');
             let net = gross - totalDeduct;
             setTxt('net_pay_display', net);
             document.getElementById('final_salary_amount').value = net;
         }
-        
-        function submitSalary() { calcSalary(); if(confirm("ยืนยันยอดสุทธิ?")) document.getElementById('salaryForm').submit(); }
-        
+        function submitSalary() { calcSalary(); if(confirm("ยืนยันยอดเงินเดือน?")) document.getElementById('salaryForm').submit(); }
         function savePreset() {
             const preset = {}; document.querySelectorAll('.retro-input').forEach(input => preset[input.id] = input.value);
             fetch('/save_salary_preset', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(preset) }).then(()=>alert("Saved!"));
         }
 
         // === Worth Logic ===
-        function saveWage() {
-            document.getElementById('hidden_wage').value = document.getElementById('w_hourly').value;
-            document.getElementById('wageForm').submit();
-        }
-        
+        document.getElementById('w_hourly').addEventListener('input', function() { document.getElementById('hidden_wage').value = this.value; });
         function calcWorth() {
             let price = parseFloat(document.getElementById('w_price').value) || 0;
             let hourly = parseFloat(document.getElementById('w_hourly').value) || 0;
-            let monthly = parseFloat(getVal('s_salary')) || 0;
+            let monthly = parseFloat(getVal('s_salary')) || 0; // Try getting from Salary tab
 
-            if(hourly <= 0) { alert("ตั้งค่าแรงก่อนครับ"); return; }
+            if(hourly <= 0) { alert("ตั้งค่าแรงต่อชั่วโมงก่อนจ้า"); return; }
             if(price <= 0) return;
 
             let hours = price / hourly;
             document.getElementById('res_hours').innerText = hours.toFixed(1);
+            document.getElementById('res_days').innerText = hours > 8 ? `(ประมาณ ${(hours/8).toFixed(1)} วันทำงาน)` : "";
             
             let verdict = document.getElementById('w_verdict');
             let pctBox = document.getElementById('res_monthly_box');
@@ -598,23 +556,25 @@
                 let pct = (price / monthly) * 100;
                 document.getElementById('res_percent').innerText = pct.toFixed(1);
                 pctBox.classList.remove('d-none');
-                verdict.innerText = pct > 30 ? "😰 แพงเอาเรื่อง!" : "🤔 พอได้อยู่";
+                verdict.innerText = pct > 30 ? "😱 แพงมาก! คิดดีๆ" : "💸 ก็พอไหวอยู่";
             } else {
                 pctBox.classList.add('d-none');
-                verdict.innerText = hours < 8 ? "😎 สบายๆ จัดเลย" : "💪 ต้องฮึดหน่อย";
+                verdict.innerText = hours < 4 ? "😎 จิ๊บๆ ซื้อเลย!" : "✌️ เหนื่อยหน่อยนะ";
             }
         }
         
         // Init
         calcSalary();
+        document.getElementById('hidden_wage').value = document.getElementById('w_hourly').value;
     </script>
     
     <style>
-        .retro-input { font-family: 'VT323'; font-size: 1.1rem; border: none; border-bottom: 1px dotted #888; background: transparent; text-align: right; width: 70px; }
+        /* Extra styles needed for retro inputs */
+        .retro-input { font-family: 'VT323'; font-size: 1.2rem; border: none; border-bottom: 1px dotted #888; background: transparent; text-align: right; width: 80px; }
         .vt-font { font-family: 'VT323', monospace; }
-        .hrs-input { width: 35px; text-align: center; background: #eee; border-radius: 4px; border:none; }
-        .amt-text { min-width: 50px; text-align: right; display: inline-block; font-family: 'VT323'; }
-        .text-purple { color: var(--k-purple); }
+        .barcode { height: 25px; background: repeating-linear-gradient(to right, #000 0px, #000 2px, transparent 2px, transparent 4px); opacity: 0.8; }
+        .hrs-input { width: 40px; text-align: center; background: #eee; }
+        .amt-text { min-width: 60px; text-align: right; display: inline-block; font-family: 'VT323'; }
     </style>
 </body>
 </html>
