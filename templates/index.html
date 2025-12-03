@@ -10,129 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
-    <style>
-        /* === MAIN THEME (Kuromi) === */
-        :root {
-            --k-bg: #f3e5f5;
-            --k-dark: #212121;
-            --k-purple: #9c27b0;
-            --k-light-purple: #e1bee7;
-            --k-pink: #e91e63;
-            --paper-color: #f6f6f6;
-            --ink-color: #2b2b2b;
-        }
-
-        body { 
-            background-color: var(--k-bg); 
-            font-family: 'Kanit', sans-serif; 
-            padding-bottom: 90px;
-            padding-top: 70px;
-            overscroll-behavior-y: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        /* Sticky Header */
-        .app-header {
-            position: fixed; top: 0; left: 0; right: 0;
-            background: rgba(243, 229, 245, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            padding: 10px 20px;
-            box-shadow: 0 1px 10px rgba(0,0,0,0.05);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        /* Bottom Nav */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: white;
-            height: 70px;
-            display: flex; justify-content: space-around; align-items: center;
-            border-top-left-radius: 20px; border-top-right-radius: 20px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-            z-index: 1000;
-            padding-bottom: 5px;
-        }
-        .nav-btn {
-            border: none; background: none;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #aaa; transition: 0.2s; width: 25%;
-        }
-        .nav-btn i { font-size: 1.6rem; margin-bottom: -5px; }
-        .nav-btn span { font-size: 0.7rem; font-weight: 400; margin-top: 2px; }
-        .nav-btn.active { color: var(--k-purple); }
-        .nav-btn.active i { transform: translateY(-5px); }
-        .nav-btn.active span { font-weight: bold; }
-
-        /* General UI */
-        .k-card { 
-            background: white; border-radius: 24px; 
-            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.1); 
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            margin-bottom: 15px; 
-            position: relative;
-        }
-        
-        .btn-kuromi {
-            background-color: var(--k-dark); color: var(--k-light-purple);
-            border-radius: 50px; border: none; font-weight: bold; padding: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        /* === RETRO RECEIPT STYLE === */
-        .retro-wrapper { font-family: 'Chakra Petch', sans-serif; display: flex; justify-content: center; }
-        .receipt-paper {
-            background-color: var(--paper-color); padding: 30px 20px; position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-top: 10px;
-            font-family: 'VT323', monospace; color: var(--ink-color);
-            width: 100%; max-width: 400px;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-        }
-        
-        .jagged-top, .jagged-bottom {
-            position: absolute; left: 0; width: 100%; height: 10px;
-            background: linear-gradient(135deg, transparent 33%, var(--paper-color) 33%, var(--paper-color) 66%, transparent 66%) -5px 0 / 10px 100% repeat-x;
-        }
-        .jagged-top { top: -10px; transform: rotate(180deg); }
-        .jagged-bottom { bottom: -10px; }
-        
-        .retro-brand { font-size: 2rem; border-bottom: 2px solid var(--ink-color); display: inline-block; margin-bottom: 5px; }
-        .retro-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 1.1rem; line-height: 1.4; }
-        .row-group-title { font-weight: 600; margin-top: 15px; font-size: 1rem; text-decoration: underline; }
-        .divider { border-bottom: 1px dashed var(--ink-color); margin: 12px 0; opacity: 0.4; }
-        .double-divider { border-bottom: 3px double var(--ink-color); margin: 15px 0; }
-        
-        /* Retro Inputs */
-        input.retro-input {
-            font-family: 'VT323', monospace; font-size: 1.3rem;
-            background: rgba(0,0,0,0.04); border: none; border-bottom: 1px dotted #888;
-            text-align: right; width: 100px; color: var(--ink-color); padding-right: 2px;
-        }
-        input.retro-input:focus { outline: none; background: #e0e0e0; border-bottom: 1px solid #000; }
-        .hrs-input { width: 50px !important; text-align: center !important; background: #ddd !important; border-radius: 4px; }
-        .amt-text { min-width: 70px; text-align: right; font-family: 'VT323'; font-size: 1.3rem; }
-        
-        /* Graph Bar */
-        .bar-container { height: 12px; background: #ccc; margin-top: 2px; width: 100%; border-radius: 2px; overflow: hidden; }
-        .bar-fill { height: 100%; width: 0%; transition: width 0.5s ease; }
-        .bar-fill.expense { background: repeating-linear-gradient(45deg, #2b2b2b, #2b2b2b 4px, #666 4px, #666 8px); }
-        .bar-fill.balance { background: #fff; border: 2px solid #2b2b2b; box-sizing: border-box; background-image: radial-gradient(#2b2b2b 20%, transparent 20%); background-size: 4px 4px; }
-        
-        .barcode { height: 35px; background: repeating-linear-gradient(to right, #000 0px, #000 2px, transparent 2px, transparent 4px, #000 4px, #000 5px, transparent 5px, transparent 8px); text-align: center; margin-top: 20px; opacity: 0.8; }
-
-        .piggy-jar {
-            background: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
-            border: 3px solid #880e4f; border-radius: 30px; padding: 20px;
-            position: relative; margin-bottom: 20px;
-            box-shadow: 0 8px 15px rgba(233, 30, 99, 0.2);
-        }
-        .piggy-delete {
-            position: absolute; top: 10px; right: 10px;
-            background: white; color: #880e4f; border-radius: 50%; width: 30px; height: 30px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
@@ -152,7 +30,6 @@
     </header>
 
     <div class="container px-3">
-        
         <div class="tab-content" id="mainTabContent">
             
             <div class="tab-pane fade show active" id="content-dash">
@@ -394,15 +271,12 @@
                         <div id="w_badge" class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger px-3 py-2 shadow">
                             WAIT
                         </div>
-                        
                         <div class="mt-3">
                             <span class="text-muted small">ต้องทำงานแลกมาด้วย</span>
                             <h1 class="display-2 fw-bold mb-0" id="res_hours">0</h1>
                             <span class="text-uppercase fw-bold text-secondary">Hours of Life</span>
                         </div>
-                        
                         <hr class="my-3 border-secondary">
-                        
                         <div class="text-start">
                             <h5 class="fw-bold" id="w_verdict_title">VERDICT</h5>
                             <p class="small text-muted mb-2" id="w_verdict_desc">คำแนะนำ...</p>
@@ -430,190 +304,6 @@
     <div class="modal fade" id="newMonthModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content border-0 rounded-4 overflow-hidden"><div class="modal-header border-0 bg-danger text-white justify-content-center"><h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> เตือนภัย!</h5></div><div class="modal-body text-center py-4"><p class="mb-4">จะล้างข้อมูลรายการทั้งหมด<br>เพื่อเริ่มเดือนใหม่ใช่ไหม?</p><form action="/reset_month" method="POST"><button type="submit" class="btn btn-danger w-100 rounded-pill fw-bold py-2 shadow-sm">ยืนยัน ล้างข้อมูล</button></form><button class="btn btn-light w-100 rounded-pill mt-2 text-muted" data-bs-dismiss="modal">ยกเลิก</button></div></div></div></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // === FIXED NAV LOGIC ===
-        const navBtns = document.querySelectorAll('.nav-btn');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        navBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                navBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                tabPanes.forEach(pane => pane.classList.remove('show', 'active'));
-                const targetId = this.getAttribute('data-bs-target');
-                const targetPane = document.querySelector(targetId);
-                if(targetPane) { targetPane.classList.add('show', 'active'); window.scrollTo(0, 0); }
-            });
-        });
-
-        // === WORTHINESS LOGIC (UPDATED WITH RESEARCH REFS) ===
-        if(document.getElementById('w_hourly')) {
-            document.getElementById('w_hourly').addEventListener('input', function() { document.getElementById('hidden_wage').value = this.value; });
-            document.getElementById('hidden_wage').value = document.getElementById('w_hourly').value;
-        }
-
-        function calcWorth() {
-            let price = parseFloat(document.getElementById('w_price').value) || 0;
-            let hourly = parseFloat(document.getElementById('w_hourly').value) || 0;
-            
-            if(hourly <= 0) { alert("กรุณาระบุ 'ค่าแรงต่อชั่วโมง' ก่อนคำนวณครับ"); return; }
-            if(price <= 0) return;
-
-            let hours = price / hourly;
-            let days = hours / 8; // Assuming 8hr work day
-
-            // Update UI Numbers
-            document.getElementById('res_hours').innerText = hours.toFixed(1);
-            document.getElementById('w_result').classList.remove('d-none');
-            
-            // Logic based on Time Cost & 50/30/20 Rule & 48-Hour Rule
-            let badge = document.getElementById('w_badge');
-            let title = document.getElementById('w_verdict_title');
-            let desc = document.getElementById('w_verdict_desc');
-            let ref = document.getElementById('w_ref_text');
-
-            if (hours < 4) {
-                // Tier 1: Small Joy (Less than half day)
-                badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-success px-3 py-2 shadow";
-                badge.innerText = "BUY IT";
-                title.innerText = "🥰 ความสุขเล็กๆ";
-                title.className = "fw-bold text-success";
-                desc.innerText = `ใช้เวลาทำงานแค่ ${hours.toFixed(1)} ชม. ถือว่าน้อยมาก ถ้าช่วยให้มีแรงทำงานต่อก็จัดเลย!`;
-                ref.innerText = "Ref: Micro-spending for mental health boost.";
-            } else if (hours < 24) {
-                // Tier 2: 1-3 Days work
-                badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3 py-2 shadow";
-                badge.innerText = "THINK";
-                title.innerText = "🤔 คิดนิดนึงนะ";
-                title.className = "fw-bold text-warning";
-                desc.innerText = `ต้องแลกด้วยงานประมาณ ${days.toFixed(1)} วัน ลองถามตัวเองว่า 'จำเป็น' หรือแค่ 'อยากได้'?`;
-                ref.innerText = "Ref: Opportunity Cost - เงินนี้เอาไปทำอย่างอื่นได้ไหม?";
-            } else if (hours < 80) {
-                // Tier 3: 1-2 Weeks (Apply 48-Hour Rule)
-                badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark px-3 py-2 shadow";
-                badge.innerText = "WAIT 48h";
-                title.innerText = "⏳ กฎ 48 ชั่วโมง";
-                title.className = "fw-bold text-warning";
-                desc.innerText = `ของชิ้นนี้ใช้เวลาหาเงินมา ${days.toFixed(0)} วัน! แนะนำให้ 'รอ 48 ชั่วโมง' ถ้ายังอยากได้ค่อยซื้อ`;
-                ref.innerText = "Ref: The 48-Hour Rule for Impulse Buying";
-            } else if (hours < 160) {
-                // Tier 4: Major Purchase (Check 30% Wants)
-                badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger px-3 py-2 shadow";
-                badge.innerText = "PLANNING";
-                title.innerText = "💸 ของชิ้นใหญ่";
-                title.className = "fw-bold text-danger";
-                desc.innerText = `นี่คือการทำงานเกือบเดือน! ตรวจสอบว่าเกินงบฟุ่มเฟือย (30% ของรายได้) หรือไม่?`;
-                ref.innerText = "Ref: 50/30/20 Budgeting Rule (Wants Limit)";
-            } else {
-                // Tier 5: Danger Zone
-                badge.className = "position-absolute top-0 start-50 translate-middle badge rounded-pill bg-dark px-3 py-2 shadow";
-                badge.innerText = "DANGER";
-                title.innerText = "😱 ภาระระยะยาว";
-                title.className = "fw-bold text-dark";
-                desc.innerText = `คุณต้องทำงานฟรีๆ ${days.toFixed(0)} วันเพื่อสิ่งนี้! มันคุ้มค่าเหนื่อยจริงๆ หรอ?`;
-                ref.innerText = "Ref: Time Cost of Living Analysis";
-            }
-        }
-
-        // === Common Utils & Init (Same as before) ===
-        const date = new Date();
-        const dateStr = date.toLocaleDateString('th-TH');
-        if(document.getElementById('currentDate')) document.getElementById('currentDate').innerText = dateStr;
-
-        function capture(id, filename) {
-            const node = document.getElementById(id);
-            html2canvas(node, { scale: 2, backgroundColor: null }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = filename + '_' + Date.now() + '.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
-        
-        // Categories & Modals Init
-        const cats = { expense: ["อาหาร", "เดินทาง", "ช้อปปิ้ง", "บิล/น้ำไฟ", "สุขภาพ", "อื่นๆ"], income: ["เงินเดือน", "โบนัส", "ขายของ", "ผู้ใหญ่ใจดี", "อื่นๆ"] };
-        function toggleCategories(targetId, preselect=null) {
-            let typeEl, selEl;
-            if(targetId === 'categorySelect') { typeEl = document.getElementById("typeSelect"); selEl = document.getElementById("categorySelect"); } 
-            else { typeEl = document.getElementById("edit_type"); selEl = document.getElementById("edit_category"); }
-            if(!typeEl || !selEl) return;
-            selEl.innerHTML = "";
-            cats[typeEl.value].forEach(c => {
-                let opt = document.createElement("option"); opt.innerText = c; opt.value = c; 
-                if(preselect && c === preselect) opt.selected = true;
-                selEl.appendChild(opt);
-            });
-        }
-        if(document.getElementById("typeSelect")) toggleCategories('categorySelect');
-
-        // Edit Modal
-        const editModalEl = document.getElementById('editModal');
-        let editModal;
-        if (editModalEl) editModal = new bootstrap.Modal(editModalEl);
-        function openEditModal(t) {
-            document.getElementById('edit_id').value = t.id;
-            document.getElementById('edit_amount').value = t.amount;
-            document.getElementById('edit_note').value = t.note;
-            document.getElementById('edit_type').value = t.type;
-            toggleCategories('edit_category', t.category);
-            if(editModal) editModal.show();
-        }
-
-        // Salary Logic (Math Core)
-        function fmt(num) { return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-        function safeEvaluate(str) { try { let s = String(str).replace(/,/g, ''); if (!/^[0-9+\-*/.()\s]+$/.test(s)) return 0; return new Function('return ' + s)() || 0; } catch (e) { return 0; } }
-        function getVal(id) { let el = document.getElementById(id); if (!el) return 0; return safeEvaluate(el.value); }
-        function solve(el) { let val = el.value; if (/[+\-*/]/.test(val)) { el.value = safeEvaluate(val); calc(); } }
-        function handleEnter(e, el) { if(e.key === 'Enter') { solve(el); el.blur(); } }
-
-        function calc() {
-            if(!document.getElementById('salary')) return;
-            let salary = getVal('salary'); let col = getVal('col'); let level = getVal('level_pay');
-            let diligence = getVal('diligence'); let food = getVal('food'); let other = getVal('other');
-            let baseForOt = salary + col + level;
-            let rate = baseForOt > 0 ? (baseForOt / 30) / 8 : 0;
-            if(document.getElementById('hr_rate')) document.getElementById('hr_rate').innerText = fmt(rate);
-            
-            let h15 = getVal('ot15_hr'); let h13 = getVal('ot13_hr'); let h30 = getVal('ot30_hr');
-            let amt15 = rate * 1.5 * h15; let amt13 = rate * 1.3 * h13; let amt30 = rate * 3.0 * h30;
-            if(document.getElementById('ot15_amt')) document.getElementById('ot15_amt').innerText = fmt(amt15);
-            if(document.getElementById('ot13_amt')) document.getElementById('ot13_amt').innerText = fmt(amt13);
-            if(document.getElementById('ot30_amt')) document.getElementById('ot30_amt').innerText = fmt(amt30);
-            
-            let totalOtHrs = h15 + h13 + h30; let otFoodAmt = totalOtHrs * 20;
-            if(document.getElementById('ot_food_amt')) document.getElementById('ot_food_amt').innerText = fmt(otFoodAmt);
-            
-            let totalIncome = baseForOt + diligence + food + other + amt15 + amt13 + amt30 + otFoodAmt;
-            if(document.getElementById('total_income')) document.getElementById('total_income').innerText = fmt(totalIncome);
-            
-            let deductInputs = document.querySelectorAll('.deduct'); let totalDeduct = 0;
-            deductInputs.forEach(el => totalDeduct += safeEvaluate(el.value));
-            if(document.getElementById('total_deduct')) document.getElementById('total_deduct').innerText = fmt(totalDeduct);
-            
-            let netPay = totalIncome - totalDeduct;
-            if(document.getElementById('net_pay')) document.getElementById('net_pay').innerText = fmt(netPay);
-            if(document.getElementById('final_salary_amount')) document.getElementById('final_salary_amount').value = netPay.toFixed(2);
-            
-            let expInputs = document.querySelectorAll('.expense'); let privateExp = 0;
-            expInputs.forEach(el => privateExp += safeEvaluate(el.value));
-            let simBalance = totalIncome - (totalDeduct + privateExp);
-            if(document.getElementById('sim_balance')) document.getElementById('sim_balance').innerText = fmt(simBalance);
-            
-            if(totalIncome > 0) {
-                let expPct = ((totalDeduct + privateExp) / totalIncome) * 100;
-                let balPct = (simBalance / totalIncome) * 100;
-                if(expPct > 100) expPct = 100; if(balPct < 0) balPct = 0;
-                if(document.getElementById('bar_expense')) document.getElementById('bar_expense').style.width = expPct + "%";
-                if(document.getElementById('exp_pct')) document.getElementById('exp_pct').innerText = expPct.toFixed(1) + "%";
-                if(document.getElementById('bar_balance')) document.getElementById('bar_balance').style.width = balPct + "%";
-                if(document.getElementById('bal_pct')) document.getElementById('bal_pct').innerText = balPct.toFixed(1) + "%";
-            }
-        }
-        function submitSalary() { calc(); if(confirm("ยืนยันยอด Net Pay เพื่อบันทึก?")) document.getElementById('salaryForm').submit(); }
-        function savePreset() { const preset = {}; document.querySelectorAll('#salary-slip-node input').forEach(input => preset[input.id] = input.value); fetch('/save_salary_preset', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(preset) }).then(()=>alert("Saved!")); }
-        
-        // Init
-        calc();
-    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
