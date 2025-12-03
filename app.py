@@ -19,7 +19,6 @@ def load_data():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-            # Ensure all keys exist
             for key in default_data:
                 if key not in data: data[key] = default_data[key]
             return data
@@ -42,7 +41,6 @@ def index():
     total_expense = sum(t["amount"] for t in transactions if t["type"] == "expense")
     balance = total_income - total_expense
     
-    # Calculate Summary by Category for the "Recap Slip"
     category_summary = {}
     for t in transactions:
         cat = t["category"]
@@ -86,7 +84,6 @@ def edit_transaction():
             t["type"] = request.form.get("type")
             t["category"] = request.form.get("category")
             t["note"] = request.form.get("note")
-            # Update date to now or keep original? Let's keep original for record but you can change it if needed
             break
             
     save_data(data)
@@ -94,7 +91,6 @@ def edit_transaction():
 
 @app.route("/reset_month", methods=["POST"])
 def reset_month():
-    # Clear only transactions, keep savings and settings
     data = load_data()
     data["transactions"] = []
     save_data(data)
@@ -107,7 +103,6 @@ def delete_transaction(t_id):
     save_data(data)
     return redirect(url_for("index"))
 
-# ... (Saving & Salary routes remain similar) ...
 @app.route("/save_salary_preset", methods=["POST"])
 def save_salary_preset():
     preset = request.json
